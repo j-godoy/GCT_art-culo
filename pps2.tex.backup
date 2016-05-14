@@ -1,0 +1,310 @@
+%\documentclass[a4paper,10pt]{article}
+\documentclass{llncs}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{color,hyperref} % Para el mailto
+\usepackage{listings} % Para agregar código de programación
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{float} % para usar [H]
+\usepackage{multirow, array} % para las tablas
+%\usepackage[tablename=Figura]{caption} % Si quiero cambiar el nombre de ``Cuadro'' que viene por defecto en las tablas
+
+\newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
+
+%opening
+\title{Generador de casos de Test automáticos a través de ejecución simbólica dinámica}
+\author{Javier Ignacio Godoy \\ \href{mailto:\mailPersonal}{\mailPersonal} }
+\institute{Instituto de Industria, Universidad Nacional de General Sarmiento, Buenos Aires, Argentina}
+
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				ABSTRACT			       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+Los casos de test unitarios son útiles para probar si la implementación de una función tiene el comportamiento esperado.
+Si bien no se puede garantizar al 100\% la correcta implementación, los test nos dan mayor seguridad de su comportamiento,
+además de permitir que futuras modificaciones en la implementación mantengan el comportamiento esperado al momento de hacer los test.
+Sin embargo, la tarea de hacer los test manualmente es compleja y costosa, lo que lleva a muchos programadores a obviar esta tarea,
+lo cual no es nada recomendable. La herramienta presentada en este artículo permite generar automáticamente casos de test unitarios
+en el lenguaje Java garantizando cubrir todas las sentencias y todas las ramas (alcanzables) del programa.
+\keywords{ejecución simbólica, test unitarios, ejecución concreta, ejecución simbólica dinámica}
+\end{abstract}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				INTRODUCCIÓN			       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introducción}
+El desarrollo de software por lo general es complejo y su mantenimiento costoso. Es común que, al agregar o cambiar una funcionalidad, estemos generando un bug sin percatarnos de ello. Esto puede provocar incluso la imposibilidad de mantener un producto de software, especialmente si los encargados de hacerlo no son quienes escribieron el código original. Modificar implementaciones de terceros (o las propias luego de un tiempo de haberlas desarrollado) generalmente provoca temor de generar bugs o dejar inconsistente el sistema. 
+JUnit, un framework Java para la ejecución de test unitarios, suele usarse para obtener ciertas garantías de que un programa Java se comporta de la forma esperada, minimizando las consecuencias anteriormente mencionadas y mejorando la calidad del código. Lo recomendable es crear al menos un test por cada método implementado. Mientras más test unitarios para cada método se escriban, mayor seguridad de su comportamiento se tendrá.
+Implementar casos de test se considera esencial en las compañías de software para dar un producto de calidad a los clientes. Sin embargo, muchos programadores continúan escribiendo código sin sus respectivos casos de test. Esto podría deberse por desconocimiento o debido al tiempo extra que requiere escribir los casos de test, aunque las ventajas que otorga lo hacen necesario. Estudios sugieren que aproximadamente el 50\% del esfuerzo de desarrollar software está representado por el testing [12], como una muestra de la importancia y el esfuerzo que requiere esta disciplina.
+Existen varios enfoques para tratar la generación de casos de test automáticos. Uno de estos es la generación de inputs aleatorios a partir de los cuales se crean los casos de test. Entre sus ventajas se destacan la rapidez de generación de los test con una buena cobertura de código. Sin embargo, presenta al menos dos problemas importantes. Por un lado, genera conjuntos de test cuyos inputs son redundantes \cite{cute}. Por otro lado, la probabilidad de seleccionar aleatoriamente un input particular que detecte un bug en el código puede ser muy pequeña \cite{cute}. Por ejemplo, la rama verdadera del condicional
+“if (x==10) then ...” sólo tiene una chance de ser ejecutada sobre \(2^{32}\) si x es un input del programa de tipo entero de 32 bit que es inicializado aleatoriamente \cite{dart}.
+Otro de los enfoques utilizados es la ejecución simbólica: en lugar de ejecutar un programa usando valores concretos como inputs del mismo -números, por ejemplo-, se ejecuta con representaciones simbólicas para un conjunto de clases de inputs \cite{symb}. Una ejecución simbólica está representado por valores simbólicos para los parámetros de entrada y una fórmula -restricción- simbólica para el output. Cada expresión condicional en el programa representa una restricción que determina un camino en el árbol de ejecución. Nótese que cada camino, en caso de tener solución factible, determina diferentes valores como inputs. Para analizar los diferentes caminos en el árbol de ejecución, se suele utilizar backtracking. Sin embargo, para ejecuciones grandes y complejas, se vuelve computacionalmente difícil de llevar a cabo.
+Un método similar es el conocido como ejecución concólica. Como su palabra lo indica, es una técnica que une la ejecución concreta con la simbólica; para cada valor concreto ingresado como input del programa -parámetros de una función-, se registra los valores simbólicos de estos parámetros y se mantiene el valor simbólico a través de las diferentes asignaciones que se realicen en el cuerpo del programa. Al igual que en la ejecución simbólica, cada camino del árbol de ejecución determina una fórmula de las variables simbólicas representadas como restricciones para ese camino particular. En vez de utilizar backtracking, las condiciones simbólicas de un determinado camino son utilizadas en un SMT Solver para obtener nuevos valores concretos que permitan recorrer un camino alternativo del programa. Utilizando estos valores concretos como nuevos inputs del programa, y siguiendo una operación similar con el resto de los caminos del árbol de ejecución, se puede obtener un conjunto de clases de inputs que funcionen como casos de test. El presente artículo describe una herramienta que utiliza esta técnica.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Ejemplo			       	       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Ejemplo}
+A continuación se describe un ejemplo de cómo la herramienta construye los test para el método Java de la figura 1.
+
+Antes de comenzar la ejecución, el código es instrumentado de forma tal de ir manteniendo un mapeo entre las variables y sus valores simbólicos. Al iniciar la ejecución sobre el código ya instrumentado, la herramienta asigna el valor cero a ambas variables.
+De esta forma, se tiene que x=0, y=0 como valores concretos y \(\{x\mapsto x0,y\mapsto y0\}\) son las expresiones simbólicas asociadas.
+
+En la primer sentencia del método, se actualiza el valor de la variable x, por lo tanto, se actualizan las expresiones simbólicas \(\{x\mapsto x0+3,y\mapsto y0\}\). Luego, la evaluación de la guarda del primer if da verdadero, y la del segundo da falso, y la ejecución de la función termina. La herramienta recolecta las restricciones de los predicados condicionales ejecutados: x0+3 >= y0 (del primer If) y x0+3 <= 10 (del segundo If). Estas restricciones (x0+3 >= y0, x0+3 <= 10) las llamaremos restricciones simbólicas.
+Luego se niega el último predicado (x0+3 > 10) y se resuelven las restricciones simbólicas para obtener un camino alternativo al ya recorrido.
+Estas restricciones se resuelven por medio de un SMT Solver: se envían las restricciones y devuelve valores concretos para las variables simbólicas
+de forma tal que se satisfagan las ecuaciones. Para las restricciones x0+3 >= y0, x0+3 > 10 se proponen los valores x0 = 8, y0 = 11.
+Se ejecuta otra vez el método toTest con estos valores, pasando nuevamente el primer If y esta vez pasa también el segundo If.
+Por lo tanto las nuevas restricciones simbólicas son x0+3 >= y0\footnote{Las restricciones ya utilizadas que no generan un camino alternativo son eliminadas}.
+Nuevamente se envían a un SMT solver y devuelve los valores x=-1, y=3.
+Al ejecutar con estos valores el método, no se pasa el primer If, con lo que se termina de recorrer todos los posibles caminos del árbol de ejecución.
+
+Finalmente, con los pares de valores {(x=0,y=0), (x=8,y=11), (x=-1,y=3)} se crean tres test, uno por cada par de valores devuelto. En la figura 1 se muestra el árbol de ejecución del método toTest.
+Cabe destacar que cada hoja del árbol representará un conjunto diferente de valores que funcionarán como input para testear dicho método,
+asegurando el 100\% de cobertura de código alcanzable \footnote{Puede suceder que el método a testear contenga “código muerto”, es decir, código que jamás se ejecutará independientemente de los valores de entrada de dicho método}, tanto de sentencias como de ramas.
+
+
+\begin{table}
+\centering
+\begin{tabular}{>{\centering}m{6cm} m{5cm}}
+\begin{lstlisting}[language=Java]
+Integer toTest(int x, int y)
+{
+  x = x +3;
+    if(x>=y) 
+      if( x > 10) 
+	return x;
+  return y;
+}
+\end{lstlisting} & 
+\includegraphics[width=0.35\textwidth]{arbolEjecucion}
+\end{tabular}
+\caption{Ejemplo de código Java junto a su árbol de ejecución correspondiente}
+\label{arbolEjecucion}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Código con ciclos		       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Código con Ciclos}\label{sec:loopProblem}
+Es importante destacar que el enfoque propuesto presenta un problema inherente a la ejecución simbólica al tratar con código que posea ciclos.
+Este problema es que al iterar sobre una variable simbólica en un ciclo puede suceder que el mismo continúe indefinidamente al generar una nueva
+ejecución en cada evaluación de la condición del ciclo. En el cuadro \ref{cicloInf} se muestra un ejemplo donde sucede esto:
+
+
+\begin{table}
+\centering
+\begin{tabular}{>{\centering}m{6cm} m{5cm}}
+\begin{lstlisting}[language=Java]
+Integer toTest2(int x)
+{
+  int y = 0;
+  while (y < x)
+    y++;
+  return y;
+}
+\end{lstlisting} & 
+\includegraphics[width=0.5\textwidth]{cicloInf}
+\end{tabular}
+\caption{Ejemplo de ciclo infinito en la ejecución simbólica}
+\label{cicloInf}
+\end{table}
+
+La herramienta comienza la ejecución con x = 0, siendo x0 su variable simbólica. El while no se cumple por lo que y = 0 y se recolecta la restricción
+simbólica 0 >= x0. Se niega esta condición (0<x0) y se la entrega al SMT solver. Este devuelve como solución x = 1. Nuevamente se ejecuta la función con
+este nuevo valor, cumpliéndose la primera vez el while, pero no la segunda. Por lo tanto se recolectan las condiciones 0<x0, 1>=x0. Luego se entrega estas
+restricciones nuevamente al solver, negando la última (0<x0, 1<x0). Como resultado devuelve x = 2. Se vuelve a ejecutar la función con este valor,
+entrando dos veces al while, por lo que el valor de y=2. Las restricciones simbólicas en esta ejecución son 0<x0, 1<x0, 2>=x0. Se niega la última condición
+y el solver devuelve x = 3. Esto permite que al ejecutar nuevamente la función con este valor se ingrese tres veces al while, obteniendo y=3 y por lo tanto 0<x0,
+1<x0, 2<x0, 3>=x0 como restricciones simbólicas. Como es de esperar, al negar la última condición (0<x0, 1<x0, 2<x0, 3<x0) el solver devuelve x=4. 
+Se puede observar que se ha incidido en un ciclo infinito. Por este motivo, es necesario buscar una alternativa al tratar con ciclos. El enfoque adoptado
+en este trabajo es ejecutar los ciclos una cantidad fija de veces k (parametrizable en la herramienta).
+Para esto es necesario un pre procesamiento cuyo objetivo es reemplazar los ciclos presentes en los métodos por su equivalente en If’s anidados una cantidad
+fija de veces. Veámoslo mejor con un ejemplo:\\
+\newline
+
+Para \(k = 1\)
+\begin{table}
+\centering
+\begin{tabular}{|c | c|}
+\hline
+\begin{lstlisting}[language=Java]
+while (x < y + 1){
+  x++;
+}
+\end{lstlisting} & 
+\begin{lstlisting}[language=Java]
+if (x < y + 1){
+  x++;
+}
+\end{lstlisting}\\
+\hline
+\end{tabular}
+\end{table}
+
+Para \(k = 2\)
+\begin{table}
+\centering
+\begin{tabular}{|c | c|}
+\hline
+\begin{lstlisting}[language=Java]
+while (x < y + 1){
+  x++;
+}
+\end{lstlisting} & 
+\begin{lstlisting}[language=Java]
+if (x < y + 1){
+  x++;
+  if (x < y +1){
+    x++;
+  }
+}
+\end{lstlisting}\\
+\hline
+\end{tabular}
+\end{table}
+
+Para \(k = n\)
+\begin{table}
+\centering
+\begin{tabular}{|c | c|}
+\hline
+\begin{lstlisting}[language=Java]
+while (x < y + 1){
+  x++;
+}
+\end{lstlisting} & 
+\begin{lstlisting}[language=Java]
+if (x < y + 1){
+  x++;
+  //
+  // (n-2 IF's)
+  //
+  if (x < y + 1){
+    x++;
+  }
+}
+\end{lstlisting}\\
+\hline
+\end{tabular}
+\end{table}
+
+De esta forma, el pre procesamiento permite modificar el programa original para evitar iteraciones infinitas.
+Este programa modificado sin ciclos será sobre el cual se lleva a cabo el proceso de instrumentación que se explicará más adelante.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Descripción del método		       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Descripción del método}
+El objetivo del prototipo de la herramienta desarrollada es generar casos de test para una función/método escrito en lenguaje Java que tenga parámetros de tipo
+entero. En otras palabras, la herramienta recibe como input un programa (una función específicamente) y devuelve una clase java con casos de test para dicha función.
+Para lograrlo se empleó la técnica conocida como ejecución concólica, donde se conjuga la ejecución de un programa, cuyos inputs son valores concretos,
+con la representación simbólica de estos, y se registran las condiciones del programa (restricciones) utilizando los valores simbólicos de los parámetros.
+Esto se logra para cada camino posible dentro del árbol de ejecución del programa. Luego de una ejecución para valores concretos, se tiene un conjunto de
+ecuaciones, de las cuales se niega la última de ellas además de marcarla como ya utilizada. Luego, este nuevo conjunto de ecuaciones representará un camino
+diferente en el árbol de ejecución. Para obtener valores concretos que permitan al programa ir por dicho camino, el conjunto de ecuaciones son analizadas
+con un SMT solver, z3 [11], cuyo output serán los valores concretos deseados (una clase de valores que representen dichas restricciones). Con estos valores se
+vuelve a ejecutar el programa, obteniendo un nuevo conjunto de ecuaciones o restricciones simbólicas que representa un camino diferente del árbol de ejecución.
+Este proceso finaliza luego de obtener valores concretos para cada camino diferente. Una vez que se obtienen los valores concretos que permiten ejecutar todo el
+árbol de ejecución, se genera un test por cada conjunto de valores.
+Para obtener el conjunto de restricciones con la representación simbólica de los parámetros de entrada de la función, es necesario instrumentar el programa.
+Spoon \cite{spoon}, una herramienta para analizar y transformar código fuente Java, es la herramienta utilizada para la instrumentación.
+Este es un proceso complejo que se detallará en las subsecciones siguientes.
+En la figura \ref{fig:procesosRealizados} se puede observar un esquema general de los procesos que se realizan.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{procesosRealizados}
+\caption{Esquema de los procesos realizados para generar los casos de test}
+\label{fig:procesosRealizados}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Instrumentación 		       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Instrumentación}
+Como se mencionó antes, el objetivo de la instrumentación es obtener todas las restricciones simbólicas de los diferentes caminos del árbol de
+ejecución para conseguir valores concretos que ejecuten todos los caminos posibles. Esto se logra modificando el programa sin cambiar su semántica original
+pero agregando sentencias. Estas permiten recolectar restricciones simbólicas en base a los parámetros simbólicos de la función teniendo en cuenta las asignaciones
+y las estructuras tipo condicionales e iterativas. Una vez finalizada la instrumentación, el programa a ejecutar es el instrumentado.
+El proceso de instrumentación se realiza tomando como input el programa modificado con el pre proceso explicado en el apartado número \ref{sec:loopProblem}
+debido al problema con los ciclos. De esta forma, el programa a instrumentar no contiene ciclos, sino que contiene una cantidad fija de If’s en su lugar.
+La instrumentación afecta tanto a la clase como a los métodos a testear. A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
+
+\begin{itemize}
+  \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego de cada asignación, se agregan las sentencias necesarias para actualizar en el mapa descrito anteriormente los valores simbólicos de las variables. Por ejemplo, para x = 2, y = 10 el Mapa $\delta$ se comporta de la siguiente manera:
+      \begin{table}
+	\centering
+	\begin{tabular}{|m{5cm} | m{5cm}|}
+	  \hline
+	  public Integer m(int $x$, int $y$) \{  & \\
+	  \hline
+	  \ \ $x = x +3;$ & $\delta$ = \{$x \mapsto x0$; $y \mapsto y0$\} \\
+	  \hline
+	  \ \ if ($x \geq y $)) \{ & $\delta$ = \{$x \mapsto x0 + 3$; $y \mapsto y0$\} \\
+	  \hline
+	  \ \ \ \ $x = x +78$; & \\
+	  \hline
+	  \ \ \ \ return $x$; & \\
+	  \hline
+	  \ \ \} & \\
+	  \hline
+	  \ \ $y = x - 2;$ & \\
+	  \hline
+	  \ \ return $y$; & $\delta$ = \{$x \mapsto x0 + 3$; $y \mapsto x0 +3 - 2$\} \\
+	  \hline
+	  \} & \\
+	  \hline
+	\end{tabular}
+      \end{table}
+      
+  \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las estructuras condicionales presentes en el código. Un método sin condicionales, es un método con un único camino posible a ejecutar. Por esta razón, las restricciones simbólicas mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En la figura 1 se puede observar un ejemplo de un método con su correspondiente árbol de ejecución. Cabe destacar que el programa en este punto no contiene ciclos, ya que estos fueron reemplazados por una cantidad fija de If’s.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				SMT solver	        	       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{SMT Solver}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Limitaciones       		       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Limitaciones}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Conclusiones y continuación	       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusiones y continuación}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Referencias 			       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{thebibliography}{X}
+\bibitem{dart} \textsc{P. Godefroid}, \textsc{N. Klarlund} y \textsc{K. Sen}. \textit{DART: Directed automated random testing}. 2005.
+\bibitem{cute} \textsc{K. Sen}, \textsc{D. Marinov} y \textsc{G. Agha}. \textit{CUTE: A concolic unit testing engine for C}. 2005.
+\bibitem{symb} \textsc{King, James C}. \textit{Symbolic Execution and Program Testing}. 1976.
+\bibitem{spoon} \textsc{Renaud Pawlak}, \textsc{Carlos Noguera} y \textsc{Nicolas Petitprez}. \textit{Spoon: Program Analysis and Transformation in Java}, [Research Report] RR-5901, Inria. 2006.
+\bibitem{z3solver} \textsc{Leonardo de Moura} y \textsc{Nikolaj Bjørner}. \textit{Z3: An Efficient SMT Solver}, Microsoft Research. 2008.
+
+ 
+\end{thebibliography}
+
+
+
+\end{document}

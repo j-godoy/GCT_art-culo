@@ -1,0 +1,22 @@
+%\documentclass[a4paper,10pt]{article}
+\documentclass{llncs}
+\usepackage[utf8]{inputenc}
+
+%opening
+\title{Título}
+\author{Javier Ignacio Godoy}
+\institute{Universidad Nacional de General Sarmiento}
+
+\begin{document}
+\frontmatter          % for the preliminaries
+ \pagestyle{headings}  % switches on printing of running heads
+\addtocmark{Hamiltonian Mechanics} % additional mark in the TOC
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{}
+
+\end{document}
