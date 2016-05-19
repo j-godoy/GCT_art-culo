@@ -78,7 +78,7 @@ de clases de inputs que funcionen como casos de test. El presente artículo desc
 %				Ejemplo			       	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ejemplo}
-A continuación se describe un ejemplo de cómo la herramienta construye los test para el método Java de la figura 1.
+A continuación se describe un ejemplo de cómo la herramienta construye los test para el método Java de la figura \ref{arbolEjecucion}.
 
 Antes de comenzar la ejecución, el código es instrumentado de forma tal de ir manteniendo un mapeo entre las variables y sus valores simbólicos. Al iniciar la ejecución sobre el
 código ya instrumentado, la herramienta asigna el valor cero a ambas variables. De esta forma, se tiene que $x=0, y=0$ como valores concretos y \(\{x\mapsto x_0,y\mapsto y_0\}\)
@@ -98,52 +98,61 @@ de ejecución del método toTest. Cabe destacar que cada hoja del árbol represe
 asegurando el 100\% de cobertura de código alcanzable \footnote{Puede suceder que el método a testear contenga “código muerto”, es decir, código que jamás se ejecutará
 independientemente de los valores de entrada de dicho método}, tanto de sentencias como de ramas. 
 
-\begin{table}
-\centering
-\begin{tabular}{>{\centering}m{6cm} m{5cm}}
-\begin{lstlisting}[language=Java]
-Integer toTest(int x, int y)
-{
-  x = x +3;
-    if(x>=y) 
-      if( x > 10) 
-	return x;
-  return y;
-}
-\end{lstlisting} & 
-\includegraphics[width=0.35\textwidth]{arbolEjecucion}
-\end{tabular}
-\caption{Ejemplo de código Java junto a su árbol de ejecución correspondiente}
-\label{arbolEjecucion}
-\end{table}
+
+\begin{figure*}[hbt!]
+  \centering
+    \begin{minipage}[b]{0.5\textwidth}
+      \begin{lstlisting}[language=Java]
+	Integer toTest(int x, int y)
+	{
+	  x = x +3;
+	    if(x>=y) 
+	      if( x > 10) 
+		return x;
+	  return y;
+	}
+      \end{lstlisting}
+      \centering{(a)}
+    \end{minipage}
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{arbolEjecucion}\\
+    \centering{(b)}
+  \end{minipage}
+  \caption{Ejemplo de código Java (a) junto a su árbol de ejecución (b) correspondiente}
+  \label{arbolEjecucion}
+\end{figure*}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%				Código con ciclos		       %
+%				El problema de los ciclos	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Código con Ciclos}\label{sec:loopProblem}
+\section{El problema de los ciclos}\label{sec:loopProblem}
 Es importante destacar que el enfoque propuesto presenta un problema inherente a la ejecución simbólica al tratar con código que posea ciclos.
 Este problema es que al iterar sobre una variable simbólica en un ciclo puede suceder que el mismo continúe indefinidamente al generar una nueva
-ejecución en cada e\-va\-lua\-ción de la condición del ciclo. En el cuadro \ref{cicloInf} se muestra un ejemplo donde sucede esto:
+ejecución en cada e\-va\-lua\-ción de la condición del ciclo. En la figura \ref{cicloInf} se muestra un ejemplo donde sucede esto:
 
 
-\begin{table}
-\centering
-\begin{tabular}{>{\centering}m{4.5cm} m{5cm}}
-\begin{lstlisting}[language=Java]
-Integer toTest2(int x)
-{
-  int y = 0;
-  while (y < x)
-    y++;
-  return y;
-}
-\end{lstlisting} & 
-\includegraphics[width=0.5\textwidth]{cicloInf}
-\end{tabular}
-\caption{Ejemplo de ciclo infinito en la ejecución simbólica}
-\label{cicloInf}
-\end{table}
+\begin{figure*}[hbt!]
+   \centering
+    \begin{minipage}[H]{0.5\textwidth}
+      \begin{lstlisting}[language=Java]
+	Integer toTest2(int x)
+	  {
+	    int y = 0;
+	    while (y < x)
+	      y++;
+	    return y;
+	  }
+      \end{lstlisting}
+    \end{minipage}
+  \begin{minipage}[H]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{cicloInf}
+  \end{minipage}
+  \caption{Ejemplo de ciclo infinito en la ejecución simbólica}
+  \label{cicloInf}
+\end{figure*}
 
 La herramienta comienza la ejecución con $x=0$, siendo $x_0$ su variable simbólica. El while no se cumple por lo que $y=0$ y se recolecta la restricción simbólica $0 \geq x_0$.
 Se niega esta condición ($0<x_0$) y se la entrega al SMT solver. Este devuelve como solución $x=1$. Nuevamente se ejecuta la función con este nuevo valor, cumpliéndose la primera vez
@@ -233,7 +242,7 @@ Este programa modificado sin ciclos será sobre el cual se lleva a cabo el proce
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Descripción del método}
 El objetivo del prototipo de la herramienta desarrollada es generar casos de test para una función/método escrito en lenguaje Java que tenga parámetros de tipo
-entero. En otras palabras, la herramienta recibe como input un programa (una función específicamente) y devuelve una clase java con casos de test para dicha función.
+entero. En otras palabras, la herramienta recibe como input un programa y devuelve una clase java con casos de test para dicha función, lista para ejecutar con JUnit.
 
 Para lograrlo se empleó la técnica conocida como ejecución concólica, donde se conjuga la ejecución de un programa, cuyos inputs son valores concretos,
 con la representación simbólica de estos, y se registran las condiciones del programa (restricciones) utilizando los valores simbólicos de los parámetros.
@@ -299,8 +308,8 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
       
   \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las
   estructuras condicionales presentes en el código. Un método sin condicionales, es un método con un único camino posible a ejecutar. Por esta razón, las restricciones simbólicas
-  mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En el
-  cuadro \ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución. Cabe destacar que el programa en este punto no contiene ciclos,
+  mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En la figura
+  \ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución. Cabe destacar que el programa en este punto no contiene ciclos,
   ya que estos fueron reemplazados por una cantidad fija de If’s.
   
   A continuación se presenta un ejemplo de cómo se recolectan las restricciones simbólicas que luego serán enviadas a un solver para obtener valores concretos.

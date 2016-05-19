@@ -78,7 +78,7 @@ de clases de inputs que funcionen como casos de test. El presente artículo desc
 %				Ejemplo			       	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ejemplo}
-A continuación se describe un ejemplo de cómo la herramienta construye los test para el método Java de la figura 1.
+A continuación se describe un ejemplo de cómo la herramienta construye los test para el método Java de la figura \ref{arbolEjecucion}.
 
 Antes de comenzar la ejecución, el código es instrumentado de forma tal de ir manteniendo un mapeo entre las variables y sus valores simbólicos. Al iniciar la ejecución sobre el
 código ya instrumentado, la herramienta asigna el valor cero a ambas variables. De esta forma, se tiene que $x=0, y=0$ como valores concretos y \(\{x\mapsto x_0,y\mapsto y_0\}\)
@@ -88,34 +88,65 @@ La herramienta recolecta las restricciones de los predicados condicionales ejecu
 Estas restricciones ($x_0+3 \geq y_0, x_0+3 \leq 10$) las llamaremos restricciones simbólicas. Luego se niega el último predicado ($x_0+3 > 10$) y se resuelven las restricciones
 simbólicas para obtener un camino alternativo al ya recorrido. Estas restricciones se resuelven por medio de un SMT Solver: se envían las restricciones y devuelve valores
 concretos para las variables simbólicas de forma tal que se satisfagan las ecuaciones. Para las restricciones $x_0+3 \geq y_0, x_0+3 > 10$ se proponen los valores $x_0 = 8, y_0 = 11$.
-Se ejecuta otra vez el método toTest con estos valores, pasando nuevamente el primer If y esta vez pasa también el segundo If. Por lo tanto las nuevas restricciones simbólicas
-son $x_0+3 \geq y_0$\footnote{Las restricciones ya utilizadas que no generan un camino alternativo son eliminadas}. Nuevamente se envían a un SMT solver y devuelve los valores
-$x=-1, y=3$. Al ejecutar con estos valores el método, no se pasa el primer If, con lo que se termina de recorrer todos los posibles caminos del árbol de ejecución.
+
+Se ejecuta otra vez el método toTest con estos valores, dando verdadero tanto el primer if como el segundo; por lo tanto ambas ramas ya han sido cubiertas y se descarta la condición
+simbólica correspondiente a esa bifurcación, quedando todavía pendiente obtener valores que hagan falsa $x_0+3 \geq y_0$. Por lo tanto se niega esta condición obtenidendo
+$x_0+3 < y_0$ y se le pide al Solver valores que la satisfaga. Este devuelve $x=-1, y=3$. Al ejecutar con estos valores el método, no se pasa el primer If, con lo que se termina de recorrer todos los posibles caminos del árbol de ejecución.
 
 Finalmente, con los pares de valores \{($x=0,y=0$), ($x=8,y=11$), ($x=-1,y=3$)\} se crean tres test, uno por cada par de valores devuelto. En la figura 1 se muestra el árbol
 de ejecución del método toTest. Cabe destacar que cada hoja del árbol representará un conjunto diferente de valores que funcionarán como input para testear dicho método,
 asegurando el 100\% de cobertura de código alcanzable \footnote{Puede suceder que el método a testear contenga “código muerto”, es decir, código que jamás se ejecutará
 independientemente de los valores de entrada de dicho método}, tanto de sentencias como de ramas. 
 
-\begin{table}
-\centering
-\begin{tabular}{>{\centering}m{6cm} m{5cm}}
-\begin{lstlisting}[language=Java]
-Integer toTest(int x, int y)
-{
-  x = x +3;
-    if(x>=y) 
-      if( x > 10) 
-	return x;
-  return y;
-}
-\end{lstlisting} & 
-\includegraphics[width=0.35\textwidth]{arbolEjecucion}
-\end{tabular}
-\caption{Ejemplo de código Java junto a su árbol de ejecución correspondiente}
-\label{arbolEjecucion}
-\end{table}
 
+% \begin{table}
+% \centering
+% \begin{tabular}{>{\centering}m{6cm} m{5cm}}
+% \begin{lstlisting}[language=Java]
+% Integer toTest(int x, int y)
+% {
+%   x = x +3;
+%     if(x>=y) 
+%       if( x > 10) 
+% 	return x;
+%   return y;
+% }
+% \end{lstlisting} & 
+% \includegraphics[width=0.35\textwidth]{arbolEjecucion}
+% \end{tabular}
+% \caption{Ejemplo de código Java junto a su árbol de ejecución correspondiente}
+% \label{arbolEjecucion}
+% \end{table}
+
+
+
+% \begin{otherlanguage}{spanish}
+
+\begin{figure*}[hbt!]
+  \centering
+    \begin{minipage}[b]{0.5\textwidth}
+      \begin{lstlisting}[language=Java]
+	Integer toTest(int x, int y)
+	{
+	  x = x +3;
+	    if(x>=y) 
+	      if( x > 10) 
+		return x;
+	  return y;
+	}
+      \end{lstlisting}
+      \centering{(a)}
+    \end{minipage}
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{arbolEjecucion}\\
+    \centering{(b)}
+  \end{minipage}
+  \caption{Ejemplo de código Java (a) junto a su árbol de ejecución (b) correspondiente}
+  \label{arbolEjecucion}
+\end{figure*}
+
+% \end{otherlanguage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %				Código con ciclos		       %
