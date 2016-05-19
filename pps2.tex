@@ -163,8 +163,8 @@ tres veces al while, obteniendo $y=3$ y por lo tanto $0<x_0, 1<x_0, 2<x_0, 3 \ge
 ($0<x_0, 1<x_0, 2<x_0, 3<x_0$) el solver devuelve $x=4$. Se puede observar que se ha incidido en un ciclo infinito. Por este motivo, es necesario buscar una alternativa al tratar
 con ciclos.
 
-El enfoque adoptado en este trabajo es ejecutar los ciclos una cantidad fija de veces k (parametrizable en la herramienta). Para esto es necesario un pre procesamiento cuyo objetivo
-es reemplazar los ciclos presentes en los métodos por su equivalente en If’s anidados una cantidad fija de veces. Veámoslo mejor con un ejemplo:\\
+El enfoque adoptado en este trabajo es ejecutar los ciclos a lo sumo una cantidad fija de veces k (parametrizable en la herramienta). Para esto es necesario un pre procesamiento
+cuyo objetivo es reemplazar los ciclos presentes en los métodos por su equivalente en If’s anidados una cantidad fija de veces. Veámoslo mejor con un ejemplo:\\
 \newline
 
 Para \(k = 1\)
@@ -309,8 +309,7 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
   \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las
   estructuras condicionales presentes en el código. Un método sin condicionales, es un método con un único camino posible a ejecutar. Por esta razón, las restricciones simbólicas
   mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En la figura
-  \ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución. Cabe destacar que el programa en este punto no contiene ciclos,
-  ya que estos fueron reemplazados por una cantidad fija de If’s.
+  \ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución.
   
   A continuación se presenta un ejemplo de cómo se recolectan las restricciones simbólicas que luego serán enviadas a un solver para obtener valores concretos.
   Cabe destacar que las restricciones simbólicas se recolectan para una ejecución concreta del método a testear, es decir, con valores concretos para cada parámetro de la función.
