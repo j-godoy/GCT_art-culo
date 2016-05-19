@@ -249,7 +249,7 @@ con la representación simbólica de estos, y se registran las condiciones del p
 Esto se logra para cada camino posible dentro del árbol de ejecución del programa. Luego de una ejecución para valores concretos, se tiene un conjunto de
 ecuaciones, de las cuales se niega la última de ellas además de marcarla como ya utilizada. Luego, este nuevo conjunto de ecuaciones representará un camino
 diferente en el árbol de ejecución. Para obtener valores concretos que permitan al programa ir por dicho camino, el conjunto de ecuaciones son analizadas
-con un SMT solver, z3 \cite{z3solver}, cuyo output serán los valores concretos deseados (una clase de valores que representen dichas restricciones). Con estos valores se
+con un SMT solver, Z3 \cite{z3solver}, cuyo output serán los valores concretos deseados (una clase de valores que representen dichas restricciones). Con estos valores se
 vuelve a ejecutar el programa, obteniendo un nuevo conjunto de ecuaciones o restricciones simbólicas que representa un camino diferente del árbol de ejecución.
 Este proceso finaliza luego de obtener valores concretos para cada camino diferente. Una vez que se obtienen los valores concretos que permiten ejecutar todo el
 árbol de ejecución, se genera un test por cada conjunto de valores.
@@ -261,7 +261,7 @@ En la figura \ref{fig:procesosRealizados} se puede observar un esquema general d
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{procesosRealizados}
+\includegraphics[width=0.85\textwidth]{procesosRealizados}
 \caption{Esquema de los procesos realizados para generar los casos de test}
 \label{fig:procesosRealizados}
 \end{figure}
@@ -347,14 +347,14 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
 %				SMT solver	        	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SMT Solver}
-El SMT solver utilizado en este trabajo es el z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo de la ejecución concólica para
+El SMT solver utilizado en este trabajo es el Z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo de la ejecución concólica para
 obtener los valores a utilizar en los casos de test generados. Este solver permite chequear la satisfacibilidad de fórmulas lógicas sobre una o más teorías, otorgando valores que
 satisfagan dichas fórmulas cuando sea posible.
 
-El uso de z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante la ejecución del código
-instrumentado -un método particular con parámetros enteros- se envían a z3 luego de negar la última de estas restricciones. Este solver las procesa y, de ser posible, devuelve
+El uso de Z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante la ejecución del código
+instrumentado -un método particular con parámetros enteros- se envían a Z3 luego de negar la última de estas restricciones. Este solver las procesa y, de ser posible, devuelve
 valores concretos que satisfagan dichas restricciones (valores concretos para las variables simbólicas). Estos valores son utilizados como input del método instrumentado para
-recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán procesadas por z3 (siempre negando la última restricción), hasta que se hayan
+recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán procesadas por Z3 (siempre negando la última restricción), hasta que se hayan
 procesado todas estas restricciones.
 
 Usar un SMT solver tiene como principal ventaja que permite obtener valores concretos que aseguren recorrer todas las ramas alcanzables del árbol de ejecución, obteniendo 100\%
