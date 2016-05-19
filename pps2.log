@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.5.10)  19 MAY 2016 00:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.5.10)  19 MAY 2016 11:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -890,102 +890,127 @@ Package babel Info: Redefining spanish shorthand "?
                                                   \fi \fi 
 l.272 \subsection
                  {Instrumentación} <./images/procesosRealizados.jpg>]
-Package babel Info: Redefining spanish shorthand <<
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand >>
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "=
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "~
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "!
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "?
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand <<
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand >>
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "=
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "~
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "!
-(babel)             in language append on input line 352.
-Package babel Info: Redefining spanish shorthand "?
-(babel)             in language append on input line 352.
- [7]
-Package babel Info: Redefining spanish shorthand <<
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand >>
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "=
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "~
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "!
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "?
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand <<
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand >>
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "=
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "~
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "!
-(babel)             in language append on input line 377.
-Package babel Info: Redefining spanish shorthand "?
-(babel)             in language append on input line 377.
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 290
+.
+LaTeX Font Info:    No file OMScmtt.fd. on input line 290.
 
-[8]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 402.
+
+LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
+(Font)              using `OMS/cmsy/m/n' instead
+(Font)              for symbol `textbraceleft' on input line 290.
+
 Package babel Info: Redefining spanish shorthand <<
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand >>
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "=
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "~
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "!
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "?
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand <<
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand >>
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "=
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "~
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "!
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining spanish shorthand "?
-(babel)             in language append on input line 402.
+(babel)             in language append on input line 318.
+[7pdfTeX warning (ext4): destination with the same identifier (name{table.1.1})
+ has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.318   A
+          continuación se presenta un ejemplo de cómo se recolectan las re...
+]
+Package babel Info: Redefining spanish shorthand <<
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand >>
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "=
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "~
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "!
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "?
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand <<
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand >>
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "=
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "~
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "!
+(babel)             in language append on input line 373.
+Package babel Info: Redefining spanish shorthand "?
+(babel)             in language append on input line 373.
+ [8pdfTeX warning (ext4): destination with the same identifier (name{table.1.2}
+) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.373 
+      ]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 413.
+Package babel Info: Redefining spanish shorthand <<
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand >>
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "=
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "~
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "!
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "?
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand <<
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand >>
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "=
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "~
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "!
+(babel)             in language append on input line 413.
+Package babel Info: Redefining spanish shorthand "?
+(babel)             in language append on input line 413.
  [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 402.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 413.
  (./pps2.aux
 LaTeX Info: Redefining \. on input line 24.
 LaTeX Info: Redefining \% on input line 24.
 )
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 402.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 402.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 413.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 413.
 Package rerunfilecheck Info: File `pps2.out' has not changed.
 (rerunfilecheck)             Checksum: 52BBAFADFF3082B011F8DC2EA4DA5CA7;129.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 402.
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 413.
  ) 
 Here is how much of TeX's memory you used:
- 8426 strings out of 495000
- 117963 string characters out of 6181169
+ 8442 strings out of 495000
+ 118149 string characters out of 6181169
  242357 words of memory out of 5000000
- 11476 multiletter control sequences out of 15000+600000
- 7935 words of font info for 28 fonts, out of 8000000 for 9000
+ 11487 multiletter control sequences out of 15000+600000
+ 8102 words of font info for 29 fonts, out of 8000000 for 9000
  20 hyphenation exceptions out of 8191
- 29i,17n,42p,331b,1505s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 29i,17n,42p,379b,1505s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texli
@@ -997,11 +1022,12 @@ s/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1
 amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
 10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on pps2.pdf (9 pages, 2860149 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on pps2.pdf (9 pages, 2874753 bytes).
 PDF statistics:
- 220 PDF objects out of 1000 (max. 8388607)
- 183 compressed objects within 2 object streams
- 84 named destinations out of 1000 (max. 500000)
+ 227 PDF objects out of 1000 (max. 8388607)
+ 189 compressed objects within 2 object streams
+ 86 named destinations out of 1000 (max. 500000)
  24 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -99,29 +99,6 @@ asegurando el 100\% de cobertura de código alcanzable \footnote{Puede suceder q
 independientemente de los valores de entrada de dicho método}, tanto de sentencias como de ramas. 
 
 
-% \begin{table}
-% \centering
-% \begin{tabular}{>{\centering}m{6cm} m{5cm}}
-% \begin{lstlisting}[language=Java]
-% Integer toTest(int x, int y)
-% {
-%   x = x +3;
-%     if(x>=y) 
-%       if( x > 10) 
-% 	return x;
-%   return y;
-% }
-% \end{lstlisting} & 
-% \includegraphics[width=0.35\textwidth]{arbolEjecucion}
-% \end{tabular}
-% \caption{Ejemplo de código Java junto a su árbol de ejecución correspondiente}
-% \label{arbolEjecucion}
-% \end{table}
-
-
-
-% \begin{otherlanguage}{spanish}
-
 \begin{figure*}[hbt!]
   \centering
     \begin{minipage}[b]{0.5\textwidth}
@@ -146,34 +123,36 @@ independientemente de los valores de entrada de dicho método}, tanto de sentenc
   \label{arbolEjecucion}
 \end{figure*}
 
-% \end{otherlanguage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%				Código con ciclos		       %
+%				El problema de los ciclos	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Código con Ciclos}\label{sec:loopProblem}
+\section{El problema de los ciclos}\label{sec:loopProblem}
 Es importante destacar que el enfoque propuesto presenta un problema inherente a la ejecución simbólica al tratar con código que posea ciclos.
 Este problema es que al iterar sobre una variable simbólica en un ciclo puede suceder que el mismo continúe indefinidamente al generar una nueva
-ejecución en cada e\-va\-lua\-ción de la condición del ciclo. En el cuadro \ref{cicloInf} se muestra un ejemplo donde sucede esto:
+ejecución en cada e\-va\-lua\-ción de la condición del ciclo. En la figura \ref{cicloInf} se muestra un ejemplo donde sucede esto:
 
 
-\begin{table}
-\centering
-\begin{tabular}{>{\centering}m{4.5cm} m{5cm}}
-\begin{lstlisting}[language=Java]
-Integer toTest2(int x)
-{
-  int y = 0;
-  while (y < x)
-    y++;
-  return y;
-}
-\end{lstlisting} & 
-\includegraphics[width=0.5\textwidth]{cicloInf}
-\end{tabular}
-\caption{Ejemplo de ciclo infinito en la ejecución simbólica}
-\label{cicloInf}
-\end{table}
+\begin{figure*}[hbt!]
+   \centering
+    \begin{minipage}[H]{0.5\textwidth}
+      \begin{lstlisting}[language=Java]
+	Integer toTest2(int x)
+	  {
+	    int y = 0;
+	    while (y < x)
+	      y++;
+	    return y;
+	  }
+      \end{lstlisting}
+    \end{minipage}
+  \begin{minipage}[H]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{cicloInf}
+  \end{minipage}
+  \caption{Ejemplo de ciclo infinito en la ejecución simbólica}
+  \label{cicloInf}
+\end{figure*}
 
 La herramienta comienza la ejecución con $x=0$, siendo $x_0$ su variable simbólica. El while no se cumple por lo que $y=0$ y se recolecta la restricción simbólica $0 \geq x_0$.
 Se niega esta condición ($0<x_0$) y se la entrega al SMT solver. Este devuelve como solución $x=1$. Nuevamente se ejecuta la función con este nuevo valor, cumpliéndose la primera vez
@@ -184,8 +163,8 @@ tres veces al while, obteniendo $y=3$ y por lo tanto $0<x_0, 1<x_0, 2<x_0, 3 \ge
 ($0<x_0, 1<x_0, 2<x_0, 3<x_0$) el solver devuelve $x=4$. Se puede observar que se ha incidido en un ciclo infinito. Por este motivo, es necesario buscar una alternativa al tratar
 con ciclos.
 
-El enfoque adoptado en este trabajo es ejecutar los ciclos una cantidad fija de veces k (parametrizable en la herramienta). Para esto es necesario un pre procesamiento cuyo objetivo
-es reemplazar los ciclos presentes en los métodos por su equivalente en If’s anidados una cantidad fija de veces. Veámoslo mejor con un ejemplo:\\
+El enfoque adoptado en este trabajo es ejecutar los ciclos a lo sumo una cantidad fija de veces k (parametrizable en la herramienta). Para esto es necesario un pre procesamiento
+cuyo objetivo es reemplazar los ciclos presentes en los métodos por su equivalente en If’s anidados una cantidad fija de veces. Veámoslo mejor con un ejemplo:\\
 \newline
 
 Para \(k = 1\)
@@ -263,14 +242,14 @@ Este programa modificado sin ciclos será sobre el cual se lleva a cabo el proce
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Descripción del método}
 El objetivo del prototipo de la herramienta desarrollada es generar casos de test para una función/método escrito en lenguaje Java que tenga parámetros de tipo
-entero. En otras palabras, la herramienta recibe como input un programa (una función específicamente) y devuelve una clase java con casos de test para dicha función.
+entero. En otras palabras, la herramienta recibe como input un programa y devuelve una clase java con casos de test para dicha función, lista para ejecutar con JUnit.
 
 Para lograrlo se empleó la técnica conocida como ejecución concólica, donde se conjuga la ejecución de un programa, cuyos inputs son valores concretos,
 con la representación simbólica de estos, y se registran las condiciones del programa (restricciones) utilizando los valores simbólicos de los parámetros.
 Esto se logra para cada camino posible dentro del árbol de ejecución del programa. Luego de una ejecución para valores concretos, se tiene un conjunto de
 ecuaciones, de las cuales se niega la última de ellas además de marcarla como ya utilizada. Luego, este nuevo conjunto de ecuaciones representará un camino
 diferente en el árbol de ejecución. Para obtener valores concretos que permitan al programa ir por dicho camino, el conjunto de ecuaciones son analizadas
-con un SMT solver, z3 \cite{z3solver}, cuyo output serán los valores concretos deseados (una clase de valores que representen dichas restricciones). Con estos valores se
+con un SMT solver, Z3 \cite{z3solver}, cuyo output serán los valores concretos deseados (una clase de valores que representen dichas restricciones). Con estos valores se
 vuelve a ejecutar el programa, obteniendo un nuevo conjunto de ecuaciones o restricciones simbólicas que representa un camino diferente del árbol de ejecución.
 Este proceso finaliza luego de obtener valores concretos para cada camino diferente. Una vez que se obtienen los valores concretos que permiten ejecutar todo el
 árbol de ejecución, se genera un test por cada conjunto de valores.
@@ -282,7 +261,7 @@ En la figura \ref{fig:procesosRealizados} se puede observar un esquema general d
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{procesosRealizados}
+\includegraphics[width=0.85\textwidth]{procesosRealizados}
 \caption{Esquema de los procesos realizados para generar los casos de test}
 \label{fig:procesosRealizados}
 \end{figure}
@@ -300,65 +279,74 @@ debido al problema con los ciclos. De esta forma, el programa a instrumentar en 
 La instrumentación afecta tanto a la clase como a los métodos a testear. A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
 
 \begin{itemize}
-  \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego de cada asignación, se agregan las sentencias necesarias para actualizar en el mapa descrito anteriormente los valores simbólicos de las variables.
-  Por ejemplo, para $x=2, y=10$ el Mapa $\delta$ se comporta de la siguiente manera:
+  \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego
+  de cada asignación, se agregan las sentencias necesarias para actualizar en el mapa descrito anteriormente los valores simbólicos de las variables.
+  Por ejemplo, para $x=2, y=10$ el Mapa $\delta$ se comporta de la forma que ilusta el siguiente cuadro. Nótese que la segunda columna representa el momento
+  inmediatamente posterior a la ejecución del código de la primer columna asociada.
       \begin{table}
 	\centering
-	\begin{tabular}{|m{5cm} | m{5cm}|}
+	\begin{tabular}{|m{5.5cm} | m{5cm}|}
 	  \hline
-	  public Integer m(int $x$, int $y$) \{  & \\
+	  \texttt{public Integer m(int x, int y) \{}  & $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ $x = x +3;$ & $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{x = x +3;} & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ if ($x \geq y $)) \{ & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{if (x $\geq$ y ) \{} &  \\
 	  \hline
-	  \ \ \ \ $x = x +78$; & \\
+	  \ \ \ \ \texttt{x = x +78;} & \\
 	  \hline
-	  \ \ \ \ return $x$; & \\
+	  \ \ \ \ \texttt{return x;} & \\
 	  \hline
-	  \ \ \} & \\
+	  \ \ \texttt{\}} & \\
 	  \hline
-	  \ \ $y = x - 2;$ & \\
+	  \ \ \texttt{y = x - 2;} & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\}\\
 	  \hline
-	  \ \ return $y$; & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\} \\
+	  \ \ \texttt{return y}; & \\
 	  \hline
-	  \} & \\
+	  \texttt{\}} & \\
 	  \hline
 	\end{tabular}
+	\centering
+	\caption{Asignaciones con su representación simbólica dado por el Mapa $\delta$. Método ejecutado con ($x=2, y=10$)}
       \end{table}
       
   \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las
   estructuras condicionales presentes en el código. Un método sin condicionales, es un método con un único camino posible a ejecutar. Por esta razón, las restricciones simbólicas
-  mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En el
-  cuadro \ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución. Cabe destacar que el programa en este punto no contiene ciclos,
-  ya que estos fueron reemplazados por una cantidad fija de If’s.
+  mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En la figura
+  \ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución.
   
   A continuación se presenta un ejemplo de cómo se recolectan las restricciones simbólicas que luego serán enviadas a un solver para obtener valores concretos.
   Cabe destacar que las restricciones simbólicas se recolectan para una ejecución concreta del método a testear, es decir, con valores concretos para cada parámetro de la función.
   
       \begin{table}
 	\centering
-	\begin{tabular}{|m{5cm} | m{5cm}|}
+	\begin{tabular}{|m{5.5cm} | m{6cm}|}
 	  \hline
-	  public Integer m(int $x$, int $y$) \{  & \\
+	  \texttt{public Integer m1(int $x$, int $y$)} \{  & \ \ $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ $x = x +3;$ & $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{x = x * 3;}                        	   & \ \ $\delta$ = \{$x \mapsto x_0*3$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ if ($x \geq y $)) \{ & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{if (x == y)) \{} 	                   & \ \ $\alpha$ = ($x_0*3 == y_0$)\\
 	  \hline
-	  \ \ \ \ $x = x +78$; & \\
+	  \ \ \ \ \texttt{x = x+y;} 		        	   & \ \ $\delta$ = \{$x \mapsto x_0*3+y$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ \ \ return $x$; & \\
+	  \ \ \ \ \texttt{if (x $\geq$ 100\ \&\&\ y > 0)}	   & \ $\alpha$ = ($x_0*3 == y_0$, !($x_0*3+y_0 \geq 100\ \&\&\ y_0>0$))\\
 	  \hline
-	  \ \ \} & \\
+	  \ \ \ \ \texttt{return x;} 				   & \\
 	  \hline
-	  \ \ $y = x - 2;$ & \\
+	  \ \ \} 				  	   & \\
 	  \hline
-	  \ \ return $y$; & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\} \\
+	  \ \ \texttt{if (x \% 2 == 0)}			   & \ $\alpha$ = ($x_0*3 == y_0$, !($x_0*3+y_0 \geq 100\ \&\&\ y_0>0$, ($x_0*3+y_0$)$\%2$))\\
 	  \hline
-	  \} & \\
+	  \ \ \ \ \texttt{return x}; 			  	   & \\
+	  \hline
+	  \ \ \texttt{return y}; 		 		   & \\
+	  \hline
+	  \} 						   & \\
 	  \hline
 	\end{tabular}
+	\caption{Ejemplo de recolección de restricciones simbólicas $\alpha$. El Mapa lógico $\delta$ actualiza los valores simbólicos de los
+	parámetros de entrada de la función.Método ejecutado con ($x=0, y=0$)}
       \end{table}
       
 \end{itemize}
@@ -368,14 +356,14 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
 %				SMT solver	        	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SMT Solver}
-El SMT solver utilizado en este trabajo es el z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo de la ejecución concólica para
+El SMT solver utilizado en este trabajo es el Z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo de la ejecución concólica para
 obtener los valores a utilizar en los casos de test generados. Este solver permite chequear la satisfacibilidad de fórmulas lógicas sobre una o más teorías, otorgando valores que
 satisfagan dichas fórmulas cuando sea posible.
 
-El uso de z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante la ejecución del código
-instrumentado -un método particular con parámetros enteros- se envían a z3 luego de negar la última de estas restricciones. Este solver las procesa y, de ser posible, devuelve
+El uso de Z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante la ejecución del código
+instrumentado -un método particular con parámetros enteros- se envían a Z3 luego de negar la última de estas restricciones. Este solver las procesa y, de ser posible, devuelve
 valores concretos que satisfagan dichas restricciones (valores concretos para las variables simbólicas). Estos valores son utilizados como input del método instrumentado para
-recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán procesadas por z3 (siempre negando la última restricción), hasta que se hayan
+recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán procesadas por Z3 (siempre negando la última restricción), hasta que se hayan
 procesado todas estas restricciones.
 
 Usar un SMT solver tiene como principal ventaja que permite obtener valores concretos que aseguren recorrer todas las ramas alcanzables del árbol de ejecución, obteniendo 100\%

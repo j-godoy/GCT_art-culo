@@ -279,31 +279,35 @@ debido al problema con los ciclos. De esta forma, el programa a instrumentar en 
 La instrumentación afecta tanto a la clase como a los métodos a testear. A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
 
 \begin{itemize}
-  \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego de cada asignación, se agregan las sentencias necesarias para actualizar en el mapa descrito anteriormente los valores simbólicos de las variables.
-  Por ejemplo, para $x=2, y=10$ el Mapa $\delta$ se comporta de la siguiente manera:
+  \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego
+  de cada asignación, se agregan las sentencias necesarias para actualizar en el mapa descrito anteriormente los valores simbólicos de las variables.
+  Por ejemplo, para $x=2, y=10$ el Mapa $\delta$ se comporta de la forma que ilusta el siguiente cuadro. Nótese que la segunda columna representa el momento
+  inmediatamente posterior a la ejecución del código de la primer columna asociada.
       \begin{table}
 	\centering
-	\begin{tabular}{|m{5cm} | m{5cm}|}
+	\begin{tabular}{|m{5.5cm} | m{5cm}|}
 	  \hline
-	  public Integer m(int $x$, int $y$) \{  & \\
+	  \texttt{public Integer m(int x, int y) \{}  & $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ $x = x +3;$ & $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{x = x +3;} 		      & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ if ($x \geq y $)) \{ & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{if (x $\geq$ y ) \{}	      &  \\
 	  \hline
-	  \ \ \ \ $x = x +78$; & \\
+	  \ \ \ \ \texttt{x = x +78;} 		      & \\
 	  \hline
-	  \ \ \ \ return $x$; & \\
+	  \ \ \ \ \texttt{return x;} 		      & \\
 	  \hline
-	  \ \ \} & \\
+	  \ \ \texttt{\}} 			      & \\
 	  \hline
-	  \ \ $y = x - 2;$ & \\
+	  \ \ \texttt{y = x - 2;} 		      & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\}\\
 	  \hline
-	  \ \ return $y$; & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\} \\
+	  \ \ \texttt{return y}; 		      & \\
 	  \hline
-	  \} & \\
+	  \texttt{\}} 				      & \\
 	  \hline
 	\end{tabular}
+	\centering
+	\caption{Asignaciones con su representación simbólica dado por el Mapa $\delta$. Método ejecutado con ($x=2, y=10$)}
       \end{table}
       
   \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las
@@ -316,28 +320,35 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
   
       \begin{table}
 	\centering
-	\begin{tabular}{|m{5cm} | m{5cm}|}
+	\begin{tabular}{|m{5.5cm} | m{6cm}|}
 	  \hline
-	  public Integer m(int $x$, int $y$) \{  & \\
+	  \texttt{public Integer m1(int $x$, int $y$)} \{  & \ \ $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ $x = x +3;$ & $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{x = x * 3;}                          & \ \ $\delta$ = \{$x \mapsto x_0*3$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ if ($x \geq y $)) \{ & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\} \\
+	  \ \ \texttt{if (x == y)) \{} 	                   & \ \ $\alpha$ = ($x_0*3 == y_0$)\\
 	  \hline
-	  \ \ \ \ $x = x +78$; & \\
+	  \ \ \ \ \texttt{x = x+y;} 		           & \ \ $\delta$ = \{$x \mapsto x_0*3+y$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ \ \ return $x$; & \\
+	  \ \ \ \ \texttt{if (x $\geq$ 100\ \&\&\ y > 0)}  & \ $\alpha$ = ($x_0*3 == y_0$, !($x_0*3+y_0 \geq 100\ \&\&\ y_0>0$))\\
 	  \hline
-	  \ \ \} & \\
+	  \ \ \ \ \texttt{return x;} 			   & \\
 	  \hline
-	  \ \ $y = x - 2;$ & \\
+	  \ \ \} 				  	   & \\
 	  \hline
-	  \ \ return $y$; & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\} \\
+	  \ \ \texttt{if (x \% 2 == 0)}			   & \ $\alpha$ = ($x_0*3 == y_0$, !($x_0*3+y_0 \geq 100\ \&\&\ y_0>0$, ($x_0*3+y_0$)$\%2$))\\
 	  \hline
-	  \} & \\
+	  \ \ \ \ \texttt{return x}; 			   & \\
+	  \hline
+	  \ \ \texttt{return y}; 		 	   & \\
+	  \hline
+	  \} 						   & \\
 	  \hline
 	\end{tabular}
+	\caption{Ejemplo de recolección de restricciones simbólicas $\alpha$. El Mapa lógico $\delta$ actualiza los valores simbólicos de los
+	parámetros de entrada de la función. Método ejecutado con ($x=0, y=0$)}
       \end{table}
+      Los restricciones $\alpha$ serán las enviadas al SMT Solver para obtener valores concretos para $x$ e $y$.
       
 \end{itemize}
 
