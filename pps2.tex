@@ -354,9 +354,9 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%				SMT solver	        	       %
+%		Satisfiability Modulo Theories (SMT) Solver	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{SMT Solver}
+\subsection{Satisfiability Modulo Theories (SMT) Solver}
 El SMT solver utilizado en este trabajo es el Z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo de la ejecución concólica para
 obtener los valores a utilizar en los casos de test generados. Este solver permite chequear la satisfacibilidad de fórmulas lógicas sobre una o más teorías, otorgando valores que
 satisfagan dichas fórmulas cuando sea posible.
@@ -383,7 +383,7 @@ teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se 
 no soportados. Otra limitación es el tiempo que puede demandar el solver en encontrar una solución para ciertas ecuaciones.
 
 Por otro lado, existen limitaciones del prototipo desarrollado que pueden resolverse. Por ejemplo, esta herramienta actualmente sólo puede generar casos de test
-para métodos cuyos parámetros y restricciones en el código son de tipo entero. Además las operaciones soportadas actualemente son: suma (+), resta (-), división (/),
+para métodos cuyos parámetros y restricciones en el código son de tipo entero. Además las operaciones soportadas actualmemente son: suma (+), resta (-), división (/),
 producto (*) y módulo (\%).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
