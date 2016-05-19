@@ -1,0 +1,32 @@
+%\documentclass[a4paper,10pt]{article}
+\documentclass{llncs}
+\usepackage[utf8]{inputenc}
+
+
+%opening
+\title{Título}
+\author{Javier Ignacio Godoy}
+%\institute{Instituto de Industria, Universidad Nacional de General Sarmiento, Buenos Aires}
+\institute{Princeton University, Princeton NJ 08544, USA,\\
+\email{I.Ekeland@princeton.edu},\\ WWW home page:
+\texttt{http://users/\homedir iekeland/web/welcome.html}
+\and
+Universit\'{e} de Paris-Sud,
+Laboratoire d'Analyse Num\'{e}rique, B\^{a}timent 425,\\
+F-91405 Orsay Cedex, France}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The abstract should summarize the contents of the paper
+using at least 70 and at most 150 words. It will be set in 9-point
+font size and be inset 1.0 cm from the right and left margins.
+There will be two blank lines before and after the Abstract. \dots
+\keywords{computational geometry, graph theory, Hamilton cycles}
+\end{abstract}
+
+\section{}
+
+\end{document}
