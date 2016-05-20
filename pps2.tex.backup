@@ -14,9 +14,10 @@
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
 
 %opening
-\title{Generador de casos de Test automáticos a través de ejecución simbólica dinámica}
-\author{Javier Ignacio Godoy \\ \href{mailto:\mailPersonal}{\mailPersonal} }
-\institute{Instituto de Industria, Universidad Nacional de General Sarmiento, Buenos Aires, Argentina}
+\title{Generador de casos de Test automáticos a través de ejecución concólica}
+%Sólo para el camera-ready
+%\author{Javier Ignacio Godoy \\ \href{mailto:\mailPersonal}{\mailPersonal} }
+%\institute{Instituto de Industria, Universidad Nacional de General Sarmiento, Buenos Aires, Argentina}
 
 
 \begin{document}
@@ -32,7 +33,8 @@ Si bien no se puede garantizar al 100\% la correcta implementación, los test no
 además de permitir que futuras modificaciones en la implementación mantengan el comportamiento esperado al momento de hacer los test.
 Sin embargo, la tarea de hacer los test manualmente es compleja y costosa, lo que lleva a muchos programadores a obviar esta tarea,
 lo cual no es nada recomendable. La herramienta presentada en este artículo permite generar automáticamente casos de test unitarios
-en el lenguaje Java garantizando cubrir todas las sentencias y todas las ramas (alcanzables) del programa.
+en el lenguaje Java garantizando cubrir todas las sentencias y todas las ramas (alcanzables) del programa. Esto se logra utilizando
+la técnica conocida como ejecución concólica.
 \keywords{ejecución simbólica, test unitarios, ejecución concólica. test automáticos}
 \end{abstract}
 
@@ -289,21 +291,21 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
 	  \hline
 	  \texttt{public Integer m(int x, int y) \{}  & $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ \texttt{x = x +3;} & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\}\\
+	  \ \ \texttt{x = x +3;} 		      & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ \texttt{if (x $\geq$ y ) \{} &  \\
+	  \ \ \texttt{if (x $\geq$ y ) \{}	      &  \\
 	  \hline
-	  \ \ \ \ \texttt{x = x +78;} & \\
+	  \ \ \ \ \texttt{x = x +78;} 		      & \\
 	  \hline
-	  \ \ \ \ \texttt{return x;} & \\
+	  \ \ \ \ \texttt{return x;} 		      & \\
 	  \hline
-	  \ \ \texttt{\}} & \\
+	  \ \ \texttt{\}} 			      & \\
 	  \hline
-	  \ \ \texttt{y = x - 2;} & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\}\\
+	  \ \ \texttt{y = x - 2;} 		      & $\delta$ = \{$x \mapsto x_0 + 3$; $y \mapsto x_0 +3 - 2$\}\\
 	  \hline
-	  \ \ \texttt{return y}; & \\
+	  \ \ \texttt{return y}; 		      & \\
 	  \hline
-	  \texttt{\}} & \\
+	  \texttt{\}} 				      & \\
 	  \hline
 	\end{tabular}
 	\centering
@@ -324,38 +326,39 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
 	  \hline
 	  \texttt{public Integer m1(int $x$, int $y$)} \{  & \ \ $\delta$ = \{$x \mapsto x_0$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ \texttt{x = x * 3;}                        	   & \ \ $\delta$ = \{$x \mapsto x_0*3$; $y \mapsto y_0$\}\\
+	  \ \ \texttt{x = x * 3;}                          & \ \ $\delta$ = \{$x \mapsto x_0*3$; $y \mapsto y_0$\}\\
 	  \hline
 	  \ \ \texttt{if (x == y)) \{} 	                   & \ \ $\alpha$ = ($x_0*3 == y_0$)\\
 	  \hline
-	  \ \ \ \ \texttt{x = x+y;} 		        	   & \ \ $\delta$ = \{$x \mapsto x_0*3+y$; $y \mapsto y_0$\}\\
+	  \ \ \ \ \texttt{x = x+y;} 		           & \ \ $\delta$ = \{$x \mapsto x_0*3+y$; $y \mapsto y_0$\}\\
 	  \hline
-	  \ \ \ \ \texttt{if (x $\geq$ 100\ \&\&\ y > 0)}	   & \ $\alpha$ = ($x_0*3 == y_0$, !($x_0*3+y_0 \geq 100\ \&\&\ y_0>0$))\\
+	  \ \ \ \ \texttt{if (x $\geq$ 100\ \&\&\ y > 0)}  & \ $\alpha$ = ($x_0*3 == y_0$, !($x_0*3+y_0 \geq 100\ \&\&\ y_0>0$))\\
 	  \hline
-	  \ \ \ \ \texttt{return x;} 				   & \\
+	  \ \ \ \ \texttt{return x;} 			   & \\
 	  \hline
 	  \ \ \} 				  	   & \\
 	  \hline
 	  \ \ \texttt{if (x \% 2 == 0)}			   & \ $\alpha$ = ($x_0*3 == y_0$, !($x_0*3+y_0 \geq 100\ \&\&\ y_0>0$, ($x_0*3+y_0$)$\%2$))\\
 	  \hline
-	  \ \ \ \ \texttt{return x}; 			  	   & \\
+	  \ \ \ \ \texttt{return x}; 			   & \\
 	  \hline
-	  \ \ \texttt{return y}; 		 		   & \\
+	  \ \ \texttt{return y}; 		 	   & \\
 	  \hline
 	  \} 						   & \\
 	  \hline
 	\end{tabular}
 	\caption{Ejemplo de recolección de restricciones simbólicas $\alpha$. El Mapa lógico $\delta$ actualiza los valores simbólicos de los
-	parámetros de entrada de la función.Método ejecutado con ($x=0, y=0$)}
+	parámetros de entrada de la función. Método ejecutado con ($x=0, y=0$)}
       \end{table}
+      Los restricciones $\alpha$ serán las enviadas al SMT Solver para obtener valores concretos para $x$ e $y$.
       
 \end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%				SMT solver	        	       %
+%		Satisfiability Modulo Theories (SMT) Solver	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{SMT Solver}
+\subsection{Satisfiability Modulo Theories (SMT) Solver}
 El SMT solver utilizado en este trabajo es el Z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo de la ejecución concólica para
 obtener los valores a utilizar en los casos de test generados. Este solver permite chequear la satisfacibilidad de fórmulas lógicas sobre una o más teorías, otorgando valores que
 satisfagan dichas fórmulas cuando sea posible.
@@ -379,11 +382,11 @@ desarrollado que pueden superarse.
 
 Uno de los principales límites de la ejecución concólica es la dependencia de un SMT Solver que permita resolver las restricciones simbólicas. Existe una restricción sobre las
 teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se ha avanzado en las teorías que manejan (enteros, reales, strings, arrays, etc.), aún existen tipos
-no soportados. Otra limitación es el tiempo que puede demandar el solver en encontrar una solución para ciertas ecuaciones, como por ejemplo ciertas restricciones lineales enteras
-con complejidad exponencial.
+no soportados. Otra limitación es el tiempo que puede demandar el solver en encontrar una solución para ciertas ecuaciones.
 
-Por otro lado, existen limitaciones del prototipo desarrollado que pueden resolverse. Por ejemplo, esta herramienta actualmente sólo puede generar casos de test para métodos cuyos
-parámetros y restricciones en el código son de tipo entero. Además soporta sólo las operaciones suma (+), resta (-), división (/), producto (*) y módulo (\%).
+Por otro lado, existen limitaciones del prototipo desarrollado que pueden resolverse. Por ejemplo, esta herramienta actualmente sólo puede generar casos de test
+para métodos cuyos parámetros y restricciones en el código son de tipo entero. Además las operaciones soportadas actualmemente son: suma (+), resta (-), división (/),
+producto (*) y módulo (\%).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %				Conclusiones y continuación	       %
