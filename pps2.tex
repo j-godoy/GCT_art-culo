@@ -403,9 +403,7 @@ división (/), producto (*) y módulo (\%).
 Al tratar con testing es importante tener en mente la célebre frase “El Testing sólo puede mostrar la presencia de defectos, no su ausencia” (E. W. Dijkstra).
 Como se ha mencionado, no es posible garantizar al 100\% que los test que se generen (independientemente de la forma adoptada) validan la correcta
 implementación del código. Sin embargo, estos nos permiten tener mayor seguridad en la implementación al detectar errores, además de otorgar ventajas
-para la mantenibilidad del código. La dedicación a la etapa de testing en un proyecto de software representa aproximadamente el 50\% del esfuerzo total.
-Esto muestra la importancia y tiempo que demanda para ofrecer código de calidad. Herramientas como JUnit han facilitado la generación de casos de test
-por parte de los programadores. Sin embargo, su elaboración sigue siendo manual y, por lo tanto, costosa.
+para la mantenibilidad del código.
 
 A lo largo del artículo se ha presentado el desarrollo de un prototipo para la generación de test automáticos para programas Java. Este tiene la ventaja
 de evitar a los programadores generar manualmente cada test, asegurando el 100\% de cobertura del código alcanzable. Para esto se ha utilizado la
@@ -418,10 +416,10 @@ Los casos de test unitarios tienen la particularidad de necesitar conocer el val
 La generación automática da como resultado test que siempre se cumplen. Su principal utilidad radica en test de regresión, permitiendo corroborar
 si se mantiene el comportamiento, por ejemplo, al modificar un programa una vez que se tienen los test generados automáticamente.
 
-Se han mencionado ciertas limitaciones propias de la herramienta desarrollada. El objetivo a corto plazo es superar algunas de estas.
-Actualmente sólo puede generar test automáticamente para métodos cuyos parámetros y restricciones en el código sean de tipo entero, además de soportar
-las operaciones aritméticas básicas (+, -, *, /, \%). Se pretende extenderlo a los tipos de datos y operaciones aritméticas soportadas por el SMT Solver Z3.
-El objetivo a mediano plazo es extender la herramienta para soportar la generación de test sobre programas que realizan llamadas a funciones dentro del código.
+Se han mencionado ciertas limitaciones propias de la herramienta desarrollada. El trabajo futuro es superar algunas de estas. Actualmente sólo puede
+generar test automáticamente para métodos cuyos parámetros y restricciones en el código sean de tipo entero, además de soportar las operaciones
+aritméticas básicas (+, -, *, /, \%). Se pretende extender la herramienta a los tipos de datos y operaciones aritméticas soportadas por el SMT Solver Z3,
+además de soportar la generación de test sobre programas que realizan llamadas a funciones dentro del código.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %				Referencias 			       %
