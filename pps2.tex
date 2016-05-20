@@ -14,7 +14,7 @@
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
 
 %opening
-\title{JGenTest: Generador de Test automáticos para Java a través de ejecución concólica}
+\title{JGenTest: Generador de Test automático para Java a través de ejecución concólica}
 %Sólo para el camera-ready
 %\author{Javier Ignacio Godoy \\ \href{mailto:\mailPersonal}{\mailPersonal} }
 %\institute{Instituto de Industria, Universidad Nacional de General Sarmiento, Buenos Aires, Argentina}
@@ -244,8 +244,9 @@ Este programa modificado sin ciclos será sobre el cual se lleva a cabo el proce
 %				Descripción del método		       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Descripción del método}
-El objetivo del prototipo de la herramienta desarrollada es generar casos de test para una función/método escrito en lenguaje Java que tenga parámetros de tipo
-entero. En otras palabras, la herramienta recibe como input un programa y devuelve una clase java con casos de test para dicha función, lista para ejecutar con JUnit.
+El objetivo del prototipo de la herramienta desarrollada es generar casos de test para las funciones/métodos de una clase Java que tenga parámetros de tipo
+entero. En otras palabras, la herramienta recibe como input un programa y devuelve una clase java con casos de test para los métodos deseados,
+lista para ejecutar con JUnit.
 
 Para lograrlo se empleó la técnica conocida como ejecución concólica, donde se conjuga la ejecución de un programa, cuyos inputs son valores concretos,
 con la representación simbólica de estos, y se registran las condiciones del programa (restricciones) utilizando los valores simbólicos de los parámetros.
