@@ -15,12 +15,16 @@
 
 %opening
 \title{JGenTest: Generador de Test automático para Java a través de ejecución concólica}
-%Sólo para el camera-ready
-%\author{Javier Ignacio Godoy \\ \href{mailto:\mailPersonal}{\mailPersonal} }
-%\institute{Instituto de Industria, Universidad Nacional de General Sarmiento, Buenos Aires, Argentina}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      Sólo para el camera-ready!!!	   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{}	%Javier Ignacio Godoy \\ \href{mailto:\mailPersonal}{\mailPersonal} }
+\institute{}	%Instituto de Industria, Universidad Nacional de General Sarmiento, Buenos Aires, Argentina}
 
 
 \begin{document}
+
 
 \maketitle
 
@@ -260,7 +264,7 @@ Este proceso finaliza luego de obtener valores concretos para cada camino difere
 
 Para obtener el conjunto de restricciones con la representación simbólica de los parámetros de entrada de la función, es necesario instrumentar el programa.
 Spoon \cite{spoon}, una herramienta para analizar y transformar código fuente Java, es la herramienta utilizada para la instrumentación.
-Este es un proceso complejo que se detallará en las subsecciones siguientes.
+Este es un proceso complejo que se detallará en la subseccion siguiente.
 En la figura \ref{fig:procesosRealizados} se puede observar un esquema general de los procesos que se realizan.
 
 \begin{figure}
@@ -361,40 +365,63 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
 %		Satisfiability Modulo Theories (SMT) Solver	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Satisfiability Modulo Theories (SMT) Solver}
-El SMT solver utilizado en este trabajo es el Z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo de la ejecución concólica para
-obtener los valores a utilizar en los casos de test generados. Este solver permite chequear la satisfacibilidad de fórmulas lógicas sobre una o más teorías, otorgando valores que
-satisfagan dichas fórmulas cuando sea posible.
+El SMT solver utilizado en este trabajo es el Z3, desarrollado por Microsoft Research. El uso de este componente es fundamental en el desarrollo
+de la ejecución concólica para obtener los valores a utilizar en los casos de test generados. Este solver permite chequear la satisfacibilidad
+de fórmulas lógicas sobre una o más teorías, otorgando valores que satisfagan dichas fórmulas cuando sea posible.
 
-El uso de Z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante la ejecución del código
-instrumentado -un método particular con parámetros enteros- se envían a Z3 luego de negar la última de estas restricciones. Este solver las procesa y, de ser posible, devuelve
-valores concretos que satisfagan dichas restricciones (valores concretos para las variables simbólicas). Estos valores son utilizados como input del método instrumentado para
-recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán procesadas por Z3 (siempre negando la última restricción), hasta que se hayan
-procesado todas estas restricciones.
+El uso de Z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante
+la ejecución del código instrumentado -un método particular con parámetros enteros- se envían a Z3 luego de negar la última de estas
+restricciones \footnote{Esto se conoce como depth first exploration y permite explorar todas las ramas del árbol de ejecución}. Este solver las procesa y,
+de ser posible, devuelve valores concretos que satisfagan dichas restriccionesdsds (valores concretos para las variables simbólicas). Estos valores son
+utilizados como input del método instrumentado para recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán
+procesadas por Z3 (siempre negando la última restricción), hasta que se hayan procesado todas estas restricciones.
 
-Usar un SMT solver tiene como principal ventaja que permite obtener valores concretos que aseguren recorrer todas las ramas alcanzables del árbol de ejecución, obteniendo 100\%
-de cobertura en los test -siempre y cuando no exista código muerto en el programa-. Sin embargo, presenta algunas desventajas en cuanto a limitaciones que se detallan en el
-apartado siguiente.
+Usar un SMT solver tiene como principal ventaja que permite obtener valores concretos que aseguren recorrer todas las ramas alcanzables del árbol de ejecución,
+obteniendo 100\% de cobertura en los test -siempre y cuando no exista código muerto en el programa-. Sin embargo, presenta algunas desventajas en cuanto a
+limitaciones que se detallan en el apartado siguiente.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %				Limitaciones       		       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Limitaciones}
-A continuación se describe brevemente limitaciones que abordan dos cuestiones: limitaciones inherentes a la ejecución concólica y limitaciones del prototipo de la herramienta
-desarrollado que pueden superarse.
+A continuación se describe brevemente limitaciones que abordan dos cuestiones: limitaciones inherentes a la ejecución concólica y limitaciones
+del prototipo de la herramienta desarrollado que pueden superarse.
 
-Uno de los principales límites de la ejecución concólica es la dependencia de un SMT Solver que permita resolver las restricciones simbólicas. Existe una restricción sobre las
-teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se ha avanzado en las teorías que manejan (enteros, reales, strings, arrays, etc.), aún existen tipos
-no soportados. Otra limitación es el tiempo que puede demandar el solver en encontrar una solución para ciertas ecuaciones.
+Uno de los principales límites de la ejecución concólica es la dependencia de un SMT Solver que permita resolver las restricciones simbólicas.
+Existe una restricción sobre las teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se ha avanzado en las teorías
+que manejan (enteros, reales, strings, arrays, etc.), aún existen tipos no soportados. Otra limitación es el tiempo que puede demandar el
+Solver en encontrar una solución para ciertas ecuaciones.
 
-Por otro lado, existen limitaciones del prototipo desarrollado que pueden resolverse. Por ejemplo, esta herramienta actualmente sólo puede generar casos de test
-para métodos cuyos parámetros y restricciones en el código son de tipo entero. Además las operaciones soportadas actualmemente son: suma (+), resta (-), división (/),
-producto (*) y módulo (\%).
+Por un lado, esta herramienta actualmente sólo puede generar casos de test para métodos cuyos parámetros y restricciones en el código son de tipo entero.
+La llamada a funciones dentro del código tampoco está soportada actualmente. Por otro lado, las operaciones soportadas son: suma (+), resta (-),
+división (/), producto (*) y módulo (\%).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %				Conclusiones y continuación	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusiones y continuación}
+Al tratar con testing es importante tener en mente la célebre frase “El Testing sólo puede mostrar la presencia de defectos, no su ausencia” (E. W. Dijkstra).
+Como se ha mencionado, no es posible garantizar al 100\% que los test que se generen (independientemente de la forma adoptada) validan la correcta
+implementación del código. Sin embargo, estos nos permiten tener mayor seguridad en la implementación al detectar errores, además de otorgar ventajas
+para la mantenibilidad del código. La dedicación a la etapa de testing en un proyecto de software representa aproximadamente el 50\% del esfuerzo total.
+Esto muestra la importancia y tiempo que demanda para ofrecer código de calidad. Herramientas como JUnit han facilitado la generación de casos de test
+por parte de los programadores. Sin embargo, su elaboración sigue siendo manual y, por lo tanto, costosa.
 
+A lo largo del artículo se ha presentado el desarrollo de un prototipo para la generación de test automáticos para programas Java. Este tiene la ventaja
+de evitar a los programadores generar manualmente cada test, asegurando el 100\% de cobertura del código alcanzable. Para esto se ha utilizado la
+técnica ejecución concólica, la cual conjuga la ejecución simbólica con la ejecución concreta. Se ha puesto en evidencia, por medio de un ejemplo,
+el problema que presentan los ciclos en ciertas ocasiones al aplicar la ejecución simbólica: se puede incidir en un ciclo infinito.
+Se ha presentado una solución a este problema, reemplazando los ciclos por una cantidad fija (parametrizable en la herramienta) de if anidados.
+De esta forma se tiene el mismo resultado evitando los ciclos infinitos.
+
+Los casos de test unitarios tienen la particularidad de necesitar conocer el valor esperado para asegurar el comportamiento que se está testeando.
+La generación automática da como resultado test que siempre se cumplen. Su principal utilidad radica en test de regresión, permitiendo corroborar
+si se mantiene el comportamiento, por ejemplo, al modificar un programa una vez que se tienen los test generados automáticamente.
+
+Se han mencionado ciertas limitaciones propias de la herramienta desarrollada. El objetivo a corto plazo es superar algunas de estas.
+Actualmente sólo puede generar test automáticamente para métodos cuyos parámetros y restricciones en el código sean de tipo entero, además de soportar
+las operaciones aritméticas básicas (+, -, *, /, \%). Se pretende extenderlo a los tipos de datos y operaciones aritméticas soportadas por el SMT Solver Z3.
+El objetivo a mediano plazo es extender la herramienta para soportar la generación de test sobre programas que realizan llamadas a funciones dentro del código.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %				Referencias 			       %
