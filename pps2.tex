@@ -290,11 +290,11 @@ En la figura \ref{fig:procesosRealizados} se puede observar un esquema general d
 Como se mencionó antes, el objetivo de la instrumentación es obtener todas las restricciones simbólicas de los diferentes caminos del árbol de
 ejecución para conseguir valores concretos que ejecuten todos los caminos posibles. Esto se logra modificando el programa sin cambiar su semántica original
 pero agregando sentencias. Estas permiten recolectar restricciones simbólicas en base a los parámetros simbólicos de la función teniendo en cuenta las asignaciones
-y las estructuras tipo condicionales e iterativas. Una vez finalizada la instrumentación, el programa a ejecutar es el instrumentado.
+y las estructuras tipo condicionales. Una vez finalizada la instrumentación, el programa a ejecutar es el instrumentado.
 
 El proceso de instrumentación se realiza tomando como input el programa modificado con el pre proceso explicado en el apartado número \ref{sec:loopProblem}
 debido al problema con los ciclos. De esta forma, el programa a instrumentar en lugar de contener ciclos, contiene una cantidad fija de If’s en su lugar.
-La instrumentación afecta tanto a la clase como a los métodos a testear. A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
+A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
 
 \begin{itemize}
   \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego
