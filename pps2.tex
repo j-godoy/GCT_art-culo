@@ -550,12 +550,25 @@ Actualmente consta de tres opciones generales.
     \label{cicloInf}
     \end{figure*}
     
-    \begin{figure}
-    \centering
-    \includegraphics[width=0.75\textwidth]{screenshots/testGenerados}
-    \caption{Test Generados}
-    \label{fig:testGenerados}
-    \end{figure}
+    
+\section{Análisis de cobertura}
+Para verificar la cobertura de los test generados, se ha utilizado el plugin para Eclipse EclEmma. Este permite observar de forma sencilla el código que se ha cubierto
+con los test. Para los test generados anteriormente se puede observar que se ha cubierto el 100\% del código:   
+\begin{figure*}[hbt!]
+  \centering
+  \begin{minipage}[H]{0.3\textwidth}
+  \centering
+  \includegraphics[width=1.7\textwidth]{screenshots/testGenerados}\\
+  \centering{(a)}
+\end{minipage}
+\begin{minipage}[H]{0.55\textwidth}
+  \centering
+  \includegraphics[width=0.65\textwidth]{screenshots/eclemma}\\
+  \centering{(b)}
+\end{minipage}
+\caption{(a)Test Generados. (b)En verde, código cubierto con los test}
+\label{cicloInf}
+\end{figure*}
 
 
 \end{document}
