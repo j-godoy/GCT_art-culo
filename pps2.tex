@@ -16,7 +16,7 @@
 \renewcommand{\appendixpagename}{Apéndices}
 
 \hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta
-	     o-pe-ra-do-res e-xis-ten} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
+	     o-pe-ra-do-res e-xis-ten sub-ya-cen-te} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
 
 
@@ -394,15 +394,15 @@ limitaciones que se detallan en el apartado siguiente.
 %				Limitaciones       		       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Limitaciones}
-A continuación se describe brevemente limitaciones que abordan dos cuestiones: limitaciones inherentes a la ejecución concólica y limitaciones
+A continuación se describen brevemente limitaciones que abordan dos cuestiones: limitaciones inherentes a la ejecución concólica y limitaciones
 del prototipo de la herramienta desarrollado que pueden superarse.
 
 Uno de los principales límites de la ejecución concólica es la dependencia de un SMT Solver que permita resolver las restricciones simbólicas.
-Existe una restricción sobre las teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se ha avanzado en las teorías
+Existe una res\-tric\-ción sobre las teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se ha avanzado en las teorías
 que manejan (enteros, reales, strings, arrays, etc.), aún existen tipos no soportados. Otra limitación es el tiempo que puede demandar el
 Solver en encontrar una solución para ciertas ecuaciones.
 
-Por un lado, esta herramienta actualmente sólo puede generar casos de test para métodos cuyos parámetros y restricciones en el código son de tipo entero.
+En cuanto a las limitaciones del prototipo, por un lado, actualmente sólo puede generar casos de test para métodos cuyos parámetros y restricciones en el código son de tipo entero.
 La llamada a funciones dentro del código tampoco está soportada actualmente. Por otro lado, las operaciones soportadas son: suma (+), resta (-),
 división (/), producto (*) y módulo (\%).
 
