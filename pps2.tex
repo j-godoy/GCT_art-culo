@@ -8,11 +8,17 @@
 \graphicspath{ {images/} }
 \usepackage{float} % para usar [H]
 \usepackage{multirow, array} % para las tablas
+\usepackage{appendix}
 %\usepackage[tablename=Figura]{caption} % Si quiero cambiar el nombre de ``Cuadro'' que viene por defecto en las tablas
+
+\renewcommand{\appendixname}{Apéndices}
+\renewcommand{\appendixtocname}{Apéndices}
+\renewcommand{\appendixpagename}{Apéndices}
 
 \hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta
 	     o-pe-ra-do-res e-xis-ten} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
+
 
 %opening
 \title{JGenTest: Generador de Test automático para Java a través de ejecución concólica}
@@ -67,16 +73,17 @@ Entre sus ventajas se destacan la rapidez de generación de los test con una bue
 Por un lado, genera conjuntos de test cuyos inputs son redundantes \cite{cute}. Por otro lado, la probabilidad de seleccionar aleatoriamente un input particular que detecte un bug
 en el código puede ser muy pequeña \cite{cute}. Por ejemplo, la rama verdadera del condicional “if ($x==10$) then ...” sólo tiene una chance de ser ejecutada sobre \(2^{32}\) si $x$
 es un input del programa de tipo entero de 32 bit que es inicializado aleatoriamente \cite{dart}.
+
 Otro de los enfoques utilizados es la ejecución simbólica: en lugar de ejecutar un programa usando valores concretos como inputs del mismo -números, por ejemplo-, se ejecuta con
 representaciones simbólicas para un conjunto de clases de inputs \cite{symb}. Una ejecución simbólica está representado por valores simbólicos para los parámetros de entrada y una
 fórmula -restricción- simbólica para el output. Cada expresión condicional en el programa representa una restricción que determina un camino en el árbol de ejecución.
 Nótese que cada camino, en caso de tener solución factible, determina diferentes valores como inputs. Para analizar los diferentes caminos en el árbol de ejecución, se suele utilizar
 backtracking. Sin embargo, para ejecuciones grandes y complejas, se vuelve computacionalmente difícil de llevar a cabo.
 
-Un método similar a la ejecución simbólica para tratar la generaciónde test automáticos es el conocido como ejecución concólica. Como su palabra lo indica, es una técnica que une la
-ejecución concreta con la simbólica; para cada valor concreto ingresado como input del programa (parámetros de una función), se registran los valores simbólicos de estos parámetros y
-se mantiene el valor simbólico a través de las diferentes asignaciones que se realicen en el cuerpo del programa. Al igual que en la ejecución simbólica, cada camino del árbol de
-ejecución determina una fórmula de las variables simbólicas representadas como restricciones para ese camino particular. En vez de utilizar backtracking,
+Un método similar a la ejecución simbólica para tratar la generación de test automáticos es el conocido como ejecución concólica. Como su palabra lo indica, es una técnica que une la
+ejecución concreta con la simbólica (CONCrete-symbOLIC execution); para cada valor concreto ingresado como input del programa (parámetros de una función), se registran los valores
+simbólicos de estos parámetros y se mantiene el valor simbólico a través de las diferentes asignaciones que se realicen en el cuerpo del programa. Al igual que en la ejecución
+simbólica, cada camino del árbol de ejecución determina una fórmula de las variables simbólicas representadas como restricciones para ese camino particular. En vez de utilizar backtracking,
 las condiciones simbólicas de un determinado camino son utilizadas en un SMT Solver para obtener nuevos valores concretos que permitan recorrer un camino alternativo del programa.
 Utilizando estos valores concretos como nuevos inputs del programa, y siguiendo una operación similar con el resto de los caminos del árbol de ejecución, se puede obtener un conjunto
 de clases de inputs que funcionen como casos de test. El presente artículo describe una herramienta que utiliza esta técnica.
@@ -446,6 +453,10 @@ además de soportar la generación de test sobre programas que realizan llamadas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \appendix
+\clearpage % o \cleardoublepage
+\addappheadtotoc
+\appendixpage
+
 \section{Pre proceso}\label{apend.A}
 Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
 modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. Este preproceso se encarga básicamente de dos tareas.

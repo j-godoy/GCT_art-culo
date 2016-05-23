@@ -8,11 +8,16 @@
 \graphicspath{ {images/} }
 \usepackage{float} % para usar [H]
 \usepackage{multirow, array} % para las tablas
+\usepackage{appendix}
 %\usepackage[tablename=Figura]{caption} % Si quiero cambiar el nombre de ``Cuadro'' que viene por defecto en las tablas
 
+%\renewcommand{\appendixname}{Apéndices}
+\renewcommand{\appendixtocname}{Apéndices}
+
 \hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta
-	     o-pe-ra-do-res} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
+	     o-pe-ra-do-res e-xis-ten} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
+
 
 %opening
 \title{JGenTest: Generador de Test automático para Java a través de ejecución concólica}
@@ -444,8 +449,13 @@ además de soportar la generación de test sobre programas que realizan llamadas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %				Apéndice 			       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
+% \newpage
 \appendix
+%\clearpage % o 
+%\cleardoublepage
+\addappheadtotoc
+\appendixpage
+
 \section{Pre proceso}\label{apend.A}
 Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
 modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. Este preproceso se encarga básicamente de dos tareas.
@@ -506,14 +516,69 @@ while (condition)
 \section{Herramienta gráfica}\label{apend.B}
 La interfaz gráfica fue desarrollada con JavaFX. Sin embargo, no se descarta la posibilidad de reemplazarla por un plugin para Eclipse, a fin de facilitar su uso.
 Actualmente consta de tres opciones generales.
-\subsection{Buscar}
-Su objetivo es seleccionar un archivo .java en el filesystem sobre la cual se desea generar los test. Por lo general, debería ser una clase perteneciente a un proyecto
-Java. En la figura \ref{fig:buscarClaseJava} se puede observar la interfaz gráfica de la herramienta al iniciarla.
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{screenshots/1-inicial}
-\caption{Esquema de los procesos realizados para generar los casos de test}
-\label{fig:buscarClaseJava}
-\end{figure}
+
+    \subsection{Buscar}
+    Su objetivo es seleccionar un archivo .java en el filesystem sobre la cual se desea generar los test. Por lo general, debería ser una clase perteneciente a un proyecto
+    Java. En la figura \ref{fig:buscarClaseJava} se puede observar la interfaz gráfica de la herramienta al iniciarla.
+    \begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/1-inicial}
+    \caption{JGenTest: Imagen de la herramienta al iniciarla}
+    \label{fig:buscarClaseJava}
+    \end{figure}
+
+    \subsection{Selección de métodos}
+    Luego de seleccionar la clase .java, la herramienta carga los métodos que existen en dicha clase, indicando el tipo de retorno y los parámetros de cada una.
+    Además se habilita el campo \texttt{Profundidad ciclos}. Este representa el parámetro $k$ explicado en el artículo en relación al problema con los ciclos durante
+    la ejecución simbólica. En lugar de ejecutarse infinitamente, se ejecutan (a lo sumo) k veces, dependiendo de los valores concretos de los parámetros de entrada.
+    En la figura \ref{fig:seleccionaParams} se muestra un ejemplo donde se seleccionan 3 métodos a testear.
+    \begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/2-seleccionMetodos}
+    \caption{Métodos seleccionados a testear. El valor 7 es la cantidad máxima de veces que se ejecutan los ciclos }
+    \label{fig:seleccionaParams}
+    \end{figure}
+    
+    \subsection{Generación de test automático}
+    Una vez seleccionados los métodos que se desean testear, al hacer clic en \texttt{Generar casos de Test!}, se llevan a cabo los procesos indicados en la figura
+    \ref{fig:procesosRealizados}. Luego de generar los casos de test, se indica por medio de un mensaje la cantidad de test generados y el lugar donde se almacenó.
+    Por defecto, se almacenan en la misma carpeta donde se encuentra el archivo .java seleccionado en el primer paso.
+    \begin{figure*}[hbt!]
+     \centering
+      \begin{minipage}[H]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{screenshots/3-generados}
+      \centering{(a)}
+    \end{minipage}
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+      \centering
+      \includegraphics[width=0.85\textwidth]{screenshots/EjemploTestGen}\\
+      \centering{(b)}
+    \end{minipage}
+    \caption{(a)Mensaje de generación correcta de los test, indicando la ubicación del archivo y la cantidad de test generados. (b)Ejemplos de test generados}
+    \label{cicloInf}
+    \end{figure*}
+    
+    
+\section{Análisis de cobertura}
+Para verificar la cobertura de los test generados, se ha utilizado el plugin para Eclipse EclEmma. Este permite observar de forma sencilla el código que se ha cubierto
+con los test. Para los test generados anteriormente se puede observar que se ha cubierto el 100\% del código:   
+\begin{figure*}[hbt!]
+  \centering
+  \begin{minipage}[H]{0.3\textwidth}
+  \centering
+  \includegraphics[width=1.7\textwidth]{screenshots/testGenerados}\\
+  \centering{(a)}
+\end{minipage}
+\begin{minipage}[H]{0.55\textwidth}
+  \centering
+  \includegraphics[width=0.65\textwidth]{screenshots/eclemma}\\
+  \centering{(b)}
+\end{minipage}
+\caption{(a)Test Generados. (b)En verde, código cubierto con los test}
+\label{cicloInf}
+\end{figure*}
+
 
 \end{document}
