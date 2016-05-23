@@ -382,7 +382,7 @@ de fórmulas lógicas sobre una o más teorías, otorgando valores que satisfaga
 El uso de Z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante
 la ejecución del código instrumentado -un método particular con parámetros enteros- se envían a Z3 luego de negar la última de estas
 restricciones \footnote{Esto se conoce como depth first exploration y permite explorar todas las ramas del árbol de ejecución}. Este solver las procesa y,
-de ser posible, devuelve valores concretos que satisfagan dichas restriccionesdsds (valores concretos para las variables simbólicas). Estos valores son
+de ser posible, devuelve valores concretos que satisfagan dichas restricciones (valores concretos para las variables simbólicas). Estos valores son
 utilizados como input del método instrumentado para recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán
 procesadas por Z3 (siempre negando la última restricción), hasta que se hayan procesado todas estas restricciones.
 
