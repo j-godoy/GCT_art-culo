@@ -10,7 +10,8 @@
 \usepackage{multirow, array} % para las tablas
 %\usepackage[tablename=Figura]{caption} % Si quiero cambiar el nombre de ``Cuadro'' que viene por defecto en las tablas
 
-\hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
+\hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta
+	     o-pe-ra-do-res} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
 
 %opening
@@ -397,9 +398,9 @@ La llamada a funciones dentro del código tampoco está soportada actualmente. P
 división (/), producto (*) y módulo (\%).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%				Conclusiones y continuación	       %
+%				Conclusiones y trabajos futuros	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusiones y continuación}
+\section{Conclusiones y trabajos futuros}
 Al tratar con testing es importante tener en mente la célebre frase “El Testing sólo puede mostrar la presencia de defectos, no su ausencia” (E. W. Dijkstra).
 Como se ha mencionado, no es posible garantizar al 100\% que los test que se generen (independientemente de la forma adoptada) validan la correcta
 implementación del código. Sin embargo, estos nos permiten tener mayor seguridad en la implementación al detectar errores, además de otorgar ventajas
@@ -433,10 +434,38 @@ además de soportar la generación de test sobre programas que realizan llamadas
 \bibitem{z3solver} \textsc{Leonardo de Moura} y \textsc{Nikolaj Bjørner}. \textit{Z3: An Efficient SMT Solver}, Microsoft Research. 2008.
 \bibitem{revSimb} \textsc{Cristian L. Vidal}, \textsc{Rodolfo F. Schmal}, \textsc{Sabino Rivero} y \textsc{Rodolfo H. Villarroel}. \textit{Una Revisión sobre la Ejecución Simbólica de Programas Computacionales}. 2014
 \bibitem{econImpact} \textsc{Gregory Tassey}. \textit{The Economic Impacts of Inadequate Infrastructure for Software Testing}. 2002.
+\bibitem{jnit} \textsc{JUnit}. \textit{http://junit.org/}.
 \bibitem{sym2con} \textsc{Daniel Paqué}. \textit{From Symbolic Execution to  Concolic Testing}. 2014.
 \bibitem{jcute} \textsc{K. Sen} y \textsc{G. Agha}. \textit{CUTE and jCUTE: Concolic Unit Testing and Explicit Path Model-Checking Tools}. 2005.
 \end{thebibliography}
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Apéndice 			       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\appendix
+\section{Pre proceso}\label{aped.A}
+Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
+modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. Este preproceso se encarga básicamente de dos tareas.
+
+Por un lado, se hace una conversión de las sentencias que contienen operadores especiales de postincremento(\texttt{a++}), preincremento(\texttt{++a}),
+postdecremento(\texttt{a--}) y predecremento(\texttt{--a}) a su versión estándar. Esto se realiza tanto para las sentencias simples que sólo contienen estos operadores
+como para las sentencias de tipo declaraciones locales o asignaciones. Algo similar se realiza para los operadores de asignación “\texttt{+=}”, “\texttt{-=}”, “\texttt{*=}”,
+“\texttt{/=}” y “\texttt{\%=}”. Son reemplazados por su “versión extendida”. A continuación algunos ejemplos de estas modificaciones sintácticas en el código:
+\begin{itemize}
+  \item \texttt{a++} es reemplazado por \texttt{a = a + 1;}
+  \item \texttt{int x = a++} es reemplazado por \texttt{int x = a; a = a + 1;}
+  \item \texttt{x = --a} es reemplazado por \texttt{a= a -1; x = a;}
+  \item \texttt{x+=a} es reemplazado por \texttt{x = x + a;}
+  \item \texttt{x*=2+y} es reemplazado por \texttt{x = x * (2+y);}
+\end{itemize}
+Estas transformaciones se realizan para otorgar a la herramienta desarrollada mayor flexibilidad en el código que acepta, puesto que el framework Spoon
+no detecta correctamente estas expresiones. Por ejemplo, para la instrucción \texttt{a+=2} detecta que el valor a asignar es 2, cuando debería ser \texttt{a + 2}.
+Por otro lado, se hace una conversión de los ciclos tipo \texttt{for} y \texttt{do while} presentes en el código fuente a su equivalente en \texttt{while}. Ejemplo:
+
+\section{Y más cosas aún}\label{aped.B}
+Y más cosas aún.
 
 \end{document}

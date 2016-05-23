@@ -10,7 +10,8 @@
 \usepackage{multirow, array} % para las tablas
 %\usepackage[tablename=Figura]{caption} % Si quiero cambiar el nombre de ``Cuadro'' que viene por defecto en las tablas
 
-\hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
+\hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta
+	     o-pe-ra-do-res} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
 
 %opening
@@ -439,5 +440,70 @@ además de soportar la generación de test sobre programas que realizan llamadas
 \end{thebibliography}
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%				Apéndice 			       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\appendix
+\section{Pre proceso}\label{aped.A}
+Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
+modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. Este preproceso se encarga básicamente de dos tareas.
+
+Por un lado, se hace una conversión de las sentencias que contienen operadores especiales de postincremento(\texttt{a++}), preincremento(\texttt{++a}),
+postdecremento(\texttt{a--}) y predecremento(\texttt{--a}) a su versión estándar. Esto se realiza tanto para las sentencias simples que sólo contienen estos operadores
+como para las sentencias de tipo declaraciones locales o asignaciones. Algo similar se realiza para los operadores de asignación “\texttt{+=}”, “\texttt{-=}”, “\texttt{*=}”,
+“\texttt{/=}” y “\texttt{\%=}”. Son reemplazados por su “versión extendida”. A continuación algunos ejemplos de estas modificaciones sintácticas en el código:
+\begin{itemize}
+  \item \texttt{a++} es reemplazado por \texttt{a = a + 1;}
+  \item \texttt{int x = a++} es reemplazado por \texttt{int x = a; a = a + 1;}
+  \item \texttt{x = --a} es reemplazado por \texttt{a= a -1; x = a;}
+  \item \texttt{x+=a} es reemplazado por \texttt{x = x + a;}
+  \item \texttt{x*=2+y} es reemplazado por \texttt{x = x * (2+y);}
+\end{itemize}
+Estas transformaciones se realizan para otorgar a la herramienta desarrollada mayor flexibilidad en el código que acepta, puesto que el framework Spoon
+no detecta correctamente estas expresiones. Por ejemplo, para la instrucción \texttt{a+=2} detecta que el valor a asignar es 2, cuando debería ser \texttt{a + 2}.
+Por otro lado, se hace una conversión de los ciclos tipo \texttt{for} y \texttt{do while} presentes en el código fuente a su equivalente en \texttt{while}. Ejemplo:
+\begin{table}
+\centering
+\begin{tabular}{|c | c|}
+\hline
+Antes & Después\\
+\hline
+\begin{lstlisting}[language=Java]
+for (int i = 0; condition; ++i)
+{
+  P
+}
+\end{lstlisting} & 
+\begin{lstlisting}[language=Java]
+int i = 0;
+while(condition)
+{
+  P;
+  ++i;
+}
+\end{lstlisting}\\
+\hline
+\begin{lstlisting}[language=Java]
+do
+{
+  S;
+}
+while (condition);
+\end{lstlisting} & 
+\begin{lstlisting}[language=Java]
+S;
+while (condition)
+{
+  S;
+}
+\end{lstlisting}\\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Y más cosas aún}\label{aped.B}
+Y más cosas aún.
 
 \end{document}
