@@ -16,7 +16,7 @@
 \renewcommand{\appendixpagename}{Apéndices}
 
 \hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta
-	     o-pe-ra-do-res e-xis-ten} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
+	     o-pe-ra-do-res e-xis-ten sub-ya-cen-te de-sa-rro-lla-da} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
 
 
@@ -256,22 +256,20 @@ Este programa modificado sin ciclos será sobre el cual se lleva a cabo el proce
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Descripción del método}
 El objetivo del prototipo de la herramienta desarrollada es generar casos de test para las funciones/métodos de una clase Java que tenga parámetros de tipo
-entero. En otras palabras, la herramienta recibe como input un programa y devuelve una clase java con casos de test para los métodos deseados,
-lista para ejecutar con JUnit.
+entero. En otras palabras, la herramienta recibe como input un programa y devuelve una clase java con casos de test para los métodos deseados, lista para ejecutar con JUnit.
 
 Para lograrlo se empleó la técnica conocida como ejecución concólica, donde se conjuga la ejecución de un programa, cuyos inputs son valores concretos,
-con la representación simbólica de estos, y se registran las condiciones del programa (restricciones) utilizando los valores simbólicos de los parámetros.
-Estos valores simbólicos se van actualizando según sea necesario en un Mapa lógico $\delta$ representado inicialmente por \{$p \mapsto p_0$; $q \mapsto q_0$\}
-donde $p,q$ son los parámetros de entrada de un método. Si los parámetros sufren alguna modificación, también se actuliza el valor simbólico en dicho mapa.
+con la representación simbólica de estos, registrando las condiciones del programa (restricciones). Estas restricciones están determinadas por los valores simbólicos,
+los cuales se van actualizando según sea necesario en un Mapa lógico $\delta$ representado inicialmente por \{$p \mapsto p_0$; $q \mapsto q_0$\}
+donde $p,q$ son parámetros de entrada de un método. Si los parámetros sufren alguna modificación, también se actualiza su valor simbólico en dicho Mapa.
 Por ejemplo, si dentro del cuerpo del método se ejecuta \texttt{p = p + q + 1;}, el Mapa $\delta$ se actualiza a \{$p \mapsto p_0 + q_0 + 1$; $q \mapsto q_0$\}.
 
-Esto se logra para cada camino posible dentro del árbol de ejecución del programa. Luego de una ejecución para valores concretos, se tiene un conjunto de
-ecuaciones, de las cuales se niega la última de ellas además de marcarla como ya utilizada. Luego, este nuevo conjunto de ecuaciones representará un camino
-diferente en el árbol de ejecución. Para obtener valores concretos que permitan al programa ir por dicho camino, el conjunto de ecuaciones son analizadas
+Luego de una ejecución para valores concretos, se tiene un conjunto de ecuaciones (o restricciones simbólicas), de las cuales se niega la última de ellas.
+Luego, este nuevo conjunto de ecuaciones representará un camino diferente en el árbol de ejecución.
+Para obtener valores concretos que permitan al programa ir por dicho camino, el conjunto de ecuaciones es analizado
 con un SMT solver, Z3 \cite{z3solver}, cuyo output serán los valores concretos deseados (una clase de valores que representen dichas restricciones). Con estos valores se
-vuelve a ejecutar el programa, obteniendo un nuevo conjunto de ecuaciones o restricciones simbólicas que representa un camino diferente del árbol de ejecución.
-Este proceso finaliza luego de obtener valores concretos para cada camino diferente. Una vez que se obtienen los valores concretos que permiten ejecutar todo el
-árbol de ejecución, se genera un test por cada conjunto de valores.
+vuelve a ejecutar el programa, obteniendo un nuevo conjunto de restricciones simbólicas que representa un camino diferente del árbol de ejecución. Este proceso finaliza luego
+de obtener valores concretos para cada camino diferente del árbol de ejecución. Una vez finalizado, se genera un caso de test por cada conjunto de valores.
 
 Para obtener el conjunto de restricciones con la representación simbólica de los parámetros de entrada de la función, es necesario instrumentar el programa.
 Spoon \cite{spoon}, una herramienta para analizar y transformar código fuente Java, es la herramienta utilizada para la instrumentación.
@@ -292,11 +290,11 @@ En la figura \ref{fig:procesosRealizados} se puede observar un esquema general d
 Como se mencionó antes, el objetivo de la instrumentación es obtener todas las restricciones simbólicas de los diferentes caminos del árbol de
 ejecución para conseguir valores concretos que ejecuten todos los caminos posibles. Esto se logra modificando el programa sin cambiar su semántica original
 pero agregando sentencias. Estas permiten recolectar restricciones simbólicas en base a los parámetros simbólicos de la función teniendo en cuenta las asignaciones
-y las estructuras tipo condicionales e iterativas. Una vez finalizada la instrumentación, el programa a ejecutar es el instrumentado.
+y las estructuras tipo condicionales. Una vez finalizada la instrumentación, el programa a ejecutar es el instrumentado.
 
 El proceso de instrumentación se realiza tomando como input el programa modificado con el pre proceso explicado en el apartado número \ref{sec:loopProblem}
 debido al problema con los ciclos. De esta forma, el programa a instrumentar en lugar de contener ciclos, contiene una cantidad fija de If’s en su lugar.
-La instrumentación afecta tanto a la clase como a los métodos a testear. A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
+A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
 
 \begin{itemize}
   \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego
@@ -329,7 +327,7 @@ La instrumentación afecta tanto a la clase como a los métodos a testear. A con
 	\centering
 	\caption{Asignaciones con su representación simbólica dado por el Mapa $\delta$. Método ejecutado con ($x=2, y=10$)}
       \end{table}
-      
+
   \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las
   estructuras condicionales presentes en el código. Un método sin condicionales, es un método con un único camino posible a ejecutar. Por esta razón, las restricciones simbólicas
   mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En la figura
@@ -384,7 +382,7 @@ de fórmulas lógicas sobre una o más teorías, otorgando valores que satisfaga
 El uso de Z3 en el desarrollo de la herramienta se ha mencionado a lo largo del presente artículo: las restricciones simbólicas recolectadas mediante
 la ejecución del código instrumentado -un método particular con parámetros enteros- se envían a Z3 luego de negar la última de estas
 restricciones \footnote{Esto se conoce como depth first exploration y permite explorar todas las ramas del árbol de ejecución}. Este solver las procesa y,
-de ser posible, devuelve valores concretos que satisfagan dichas restriccionesdsds (valores concretos para las variables simbólicas). Estos valores son
+de ser posible, devuelve valores concretos que satisfagan dichas restricciones (valores concretos para las variables simbólicas). Estos valores son
 utilizados como input del método instrumentado para recorrer un camino alternativo al anterior, recogiendo nuevas restricciones simbólicas que serán
 procesadas por Z3 (siempre negando la última restricción), hasta que se hayan procesado todas estas restricciones.
 
@@ -396,15 +394,15 @@ limitaciones que se detallan en el apartado siguiente.
 %				Limitaciones       		       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Limitaciones}
-A continuación se describe brevemente limitaciones que abordan dos cuestiones: limitaciones inherentes a la ejecución concólica y limitaciones
+A continuación se describen brevemente limitaciones que abordan dos cuestiones: limitaciones inherentes a la ejecución concólica y limitaciones
 del prototipo de la herramienta desarrollado que pueden superarse.
 
 Uno de los principales límites de la ejecución concólica es la dependencia de un SMT Solver que permita resolver las restricciones simbólicas.
-Existe una restricción sobre las teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se ha avanzado en las teorías
+Existe una res\-tric\-ción sobre las teorías que pueden incluirse que depende del SMT solver subyacente. Si bien se ha avanzado en las teorías
 que manejan (enteros, reales, strings, arrays, etc.), aún existen tipos no soportados. Otra limitación es el tiempo que puede demandar el
 Solver en encontrar una solución para ciertas ecuaciones.
 
-Por un lado, esta herramienta actualmente sólo puede generar casos de test para métodos cuyos parámetros y restricciones en el código son de tipo entero.
+En cuanto a las limitaciones del prototipo, por un lado, actualmente sólo puede generar casos de test para métodos cuyos parámetros y restricciones en el código son de tipo entero.
 La llamada a funciones dentro del código tampoco está soportada actualmente. Por otro lado, las operaciones soportadas son: suma (+), resta (-),
 división (/), producto (*) y módulo (\%).
 
@@ -457,13 +455,19 @@ además de soportar la generación de test sobre programas que realizan llamadas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \appendix
-\clearpage % o \cleardoublepage
-\addappheadtotoc
-\appendixpage
+% \clearpage % o \cleardoublepage
+% \addappheadtotoc
+% \appendixpage
 
-\section{Pre proceso}\label{apend.A}
-Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
-modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. Este preproceso se encarga básicamente de dos tareas.
+
+\section*{Apéndice A. Preproceso}\label{apend.A}
+Con el objetivo de otorgar a la herramienta desarrollada mayor flexibilidad en el código que acepta, se han aplicado una serie de proprocesos sobre el código fuente
+original. Esto se realiza ya que el framework Spoon no detecta correctamente ciertas expresiones. Por ejemplo, para la instrucción \texttt{a+=2} detecta que el valor
+a asignar es 2, cuando debería ser \texttt{a + 2}.
+% Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
+% modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. 
+
+Este preproceso se encarga básicamente de dos tareas.
 
 Por un lado, se hace una conversión de las sentencias que contienen operadores especiales de postincremento(\texttt{a++}), preincremento(\texttt{++a}),
 postdecremento(\texttt{a--}) y predecremento(\texttt{--a}) a su versión estándar. Esto se realiza tanto para las sentencias simples que sólo contienen estos operadores
@@ -476,9 +480,9 @@ como para las sentencias de tipo declaraciones locales o asignaciones. Algo simi
   \item \texttt{x+=a} es reemplazado por \texttt{x = x + a;}
   \item \texttt{x*=2+y} es reemplazado por \texttt{x = x * (2+y);}
 \end{itemize}
-Estas transformaciones se realizan para otorgar a la herramienta desarrollada mayor flexibilidad en el código que acepta, puesto que el framework Spoon
-no detecta correctamente estas expresiones. Por ejemplo, para la instrucción \texttt{a+=2} detecta que el valor a asignar es 2, cuando debería ser \texttt{a + 2}.
-Por otro lado, se hace una conversión de los ciclos tipo \texttt{for} y \texttt{do while} presentes en el código fuente a su equivalente en \texttt{while}. Ejemplo:
+Por otro lado, se hace una conversión de los ciclos tipo \texttt{for} y \texttt{do while} presentes en el código fuente a su equivalente en \texttt{while}. En el cuadro
+\ref{transfCiclos} se puede obervar un ejemplo.
+
 \begin{table}
 \centering
 \begin{tabular}{|c | c|}
@@ -516,7 +520,13 @@ while (condition)
 \end{lstlisting}\\
 \hline
 \end{tabular}
+\caption{Transformación de \texttt{for} y \texttt{do while} a su equivalente en \texttt{while}}
+\label{transfCiclos}
 \end{table}
+
+De esta forma, al momento de procesar los ciclos (por lo comentado en la sección \ref{sec:loopProblem}), se puede pensar únicamente en el procesamiento de los ciclos tipo
+\texttt{while}, facilitando dicho procesamiento.
+
 
 \section{Herramienta gráfica}\label{apend.B}
 La interfaz gráfica fue desarrollada con JavaFX. Sin embargo, no se descarta la posibilidad de reemplazarla por un plugin para Eclipse, a fin de facilitar su uso.

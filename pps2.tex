@@ -16,7 +16,7 @@
 \renewcommand{\appendixpagename}{Apéndices}
 
 \hyphenation{he-rra-mien-ta es-cri-ban va-lor va-lo-res in-he-ren-te e-xis-ta
-	     o-pe-ra-do-res e-xis-ten sub-ya-cen-te} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
+	     o-pe-ra-do-res e-xis-ten sub-ya-cen-te de-sa-rro-lla-da} %Indico como deben dividirse las palabras que s e ``cortan'' mal cuando se justifica el texto
 \newcommand{\mailPersonal}{j\_godoy@openmailbox.com}
 
 
@@ -455,13 +455,19 @@ además de soportar la generación de test sobre programas que realizan llamadas
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \appendix
-\clearpage % o \cleardoublepage
-\addappheadtotoc
-\appendixpage
+% \clearpage % o \cleardoublepage
+% \addappheadtotoc
+% \appendixpage
 
-\section{Pre proceso}\label{apend.A}
-Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
-modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. Este preproceso se encarga básicamente de dos tareas.
+
+\section*{Apéndice A. \enspace Preproceso}\label{apend.A}
+Con el objetivo de otorgar a la herramienta desarrollada mayor flexibilidad en el código que acepta, se han aplicado una serie de proprocesos sobre el código fuente
+original. Esto se realiza ya que el framework Spoon no detecta correctamente ciertas expresiones. Por ejemplo, para la instrucción \texttt{a+=2} detecta que el valor
+a asignar es 2, cuando debería ser \texttt{a + 2}.
+% Antes de realizar el proceso principal que consiste en instrumentar el programa para obtener las restricciones simbólicas, se realiza un pre proceso sobre el código fuente,
+% modificando la sintaxis pero no la semántica del mismo; este funcionará como nuevo input para la herramienta. 
+
+Este preproceso se encarga básicamente de dos tareas.
 
 Por un lado, se hace una conversión de las sentencias que contienen operadores especiales de postincremento(\texttt{a++}), preincremento(\texttt{++a}),
 postdecremento(\texttt{a--}) y predecremento(\texttt{--a}) a su versión estándar. Esto se realiza tanto para las sentencias simples que sólo contienen estos operadores
@@ -474,9 +480,9 @@ como para las sentencias de tipo declaraciones locales o asignaciones. Algo simi
   \item \texttt{x+=a} es reemplazado por \texttt{x = x + a;}
   \item \texttt{x*=2+y} es reemplazado por \texttt{x = x * (2+y);}
 \end{itemize}
-Estas transformaciones se realizan para otorgar a la herramienta desarrollada mayor flexibilidad en el código que acepta, puesto que el framework Spoon
-no detecta correctamente estas expresiones. Por ejemplo, para la instrucción \texttt{a+=2} detecta que el valor a asignar es 2, cuando debería ser \texttt{a + 2}.
-Por otro lado, se hace una conversión de los ciclos tipo \texttt{for} y \texttt{do while} presentes en el código fuente a su equivalente en \texttt{while}. Ejemplo:
+Por otro lado, se hace una conversión de los ciclos tipo \texttt{for} y \texttt{do while} presentes en el código fuente a su equivalente en \texttt{while}. En el cuadro
+\ref{transfCiclos} se puede obervar un ejemplo.
+
 \begin{table}
 \centering
 \begin{tabular}{|c | c|}
@@ -514,35 +520,43 @@ while (condition)
 \end{lstlisting}\\
 \hline
 \end{tabular}
+\caption{Transformación de \texttt{for} y \texttt{do while} a su equivalente en \texttt{while}}
+\label{transfCiclos}
 \end{table}
 
-\section{Herramienta gráfica}\label{apend.B}
-La interfaz gráfica fue desarrollada con JavaFX. Sin embargo, no se descarta la posibilidad de reemplazarla por un plugin para Eclipse, a fin de facilitar su uso.
-Actualmente consta de tres opciones generales.
+De esta forma, al momento de procesar los ciclos (por lo comentado en la sección \ref{sec:loopProblem}), se puede pensar únicamente en el procesamiento de los ciclos tipo
+\texttt{while}, facilitando dicho procesamiento.
 
-    \subsection{Buscar}
+
+\section*{Apéndice B.\enspace Herramienta gráfica}\label{apend.B}
+A continuación se presentan algunas características y usos de la herramienta gráfica.
+
+Su interfaz fue desarrollada con JavaFX. Sin embargo, no se descarta la posibilidad de reemplazarla por un plugin para Eclipse, a fin de facilitar su uso.
+Actualmente consta de tres opciones generales:
+
+    \subsection*{B.1\enspace Buscar}
     Su objetivo es seleccionar un archivo .java en el filesystem sobre la cual se desea generar los test. Por lo general, debería ser una clase perteneciente a un proyecto
     Java. En la figura \ref{fig:buscarClaseJava} se puede observar la interfaz gráfica de la herramienta al iniciarla.
     \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{screenshots/1-inicial}
+    \includegraphics[width=0.7\textwidth]{screenshots/1-inicial}
     \caption{JGenTest: Imagen de la herramienta al iniciarla}
     \label{fig:buscarClaseJava}
     \end{figure}
 
-    \subsection{Selección de métodos}
+    \subsection*{B.2\enspace Selección de métodos}
     Luego de seleccionar la clase .java, la herramienta carga los métodos que existen en dicha clase, indicando el tipo de retorno y los parámetros de cada una.
     Además se habilita el campo \texttt{Profundidad ciclos}. Este representa el parámetro $k$ explicado en el artículo en relación al problema con los ciclos durante
     la ejecución simbólica. En lugar de ejecutarse infinitamente, se ejecutan (a lo sumo) k veces, dependiendo de los valores concretos de los parámetros de entrada.
     En la figura \ref{fig:seleccionaParams} se muestra un ejemplo donde se seleccionan 3 métodos a testear.
     \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{screenshots/2-seleccionMetodos}
+    \includegraphics[width=0.85\textwidth]{screenshots/2-seleccionMetodos}
     \caption{Métodos seleccionados a testear. El valor 7 es la cantidad máxima de veces que se ejecutan los ciclos }
     \label{fig:seleccionaParams}
     \end{figure}
     
-    \subsection{Generación de test automático}
+    \subsection*{B.3\enspace Generación de test automático}
     Una vez seleccionados los métodos que se desean testear, al hacer clic en \texttt{Generar casos de Test!}, se llevan a cabo los procesos indicados en la figura
     \ref{fig:procesosRealizados}. Luego de generar los casos de test, se indica por medio de un mensaje la cantidad de test generados y el lugar donde se almacenó.
     Por defecto, se almacenan en la misma carpeta donde se encuentra el archivo .java seleccionado en el primer paso.
@@ -564,7 +578,7 @@ Actualmente consta de tres opciones generales.
     \end{figure*}
     
     
-\section{Análisis de cobertura}
+\section*{Apéndice C.\enspace Análisis de cobertura}
 Para verificar la cobertura de los test generados, se ha utilizado el plugin para Eclipse EclEmma. Este permite observar de forma sencilla el código que se ha cubierto
 con los test. Para los test generados anteriormente se puede observar que se ha cubierto el 100\% del código:   
 \begin{figure*}[hbt!]
