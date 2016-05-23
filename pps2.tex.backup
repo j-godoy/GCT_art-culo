@@ -47,7 +47,7 @@ lo cual no es nada recomendable. La herramienta presentada en este artículo per
 en el lenguaje Java garantizando cubrir todas las sentencias y todas las ramas (alcanzables) del programa. Esto se lleva a cabo
 utilizando la técnica conocida como ejecución concólica.
 
-\keywords{ejecución simbólica, test unitarios, ejecución concólica. test automáticos}
+\keywords{testing, generación automática de casos de test, ejecución concólica.}
 \end{abstract}
 
 
@@ -93,7 +93,7 @@ de clases de inputs que funcionen como casos de test. El presente artículo desc
 %				Ejemplo			       	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ejemplo}
-A continuación se describe un ejemplo de cómo la herramienta construye los test para el método Java de la figura \ref{arbolEjecucion}.
+A continuación se describe un ejemplo de cómo la herramienta construye los test para el método Java de la Figura~\ref{arbolEjecucion} (a).
 
 Antes de comenzar la ejecución, el código es instrumentado de forma tal de ir manteniendo un mapeo entre las variables y sus valores simbólicos. Al iniciar la ejecución sobre el
 código ya instrumentado, la herramienta asigna el valor cero a ambas variables. De esta forma, se tiene que $x=0, y=0$ como valores concretos y \(\{x\mapsto x_0,y\mapsto y_0\}\)
@@ -105,9 +105,9 @@ simbólicas para obtener un camino alternativo al ya recorrido. Estas restriccio
 concretos para las variables simbólicas de forma tal que se satisfagan las ecuaciones. Para las restricciones $x_0+3 \geq y_0, x_0+3 > 10$ se proponen los valores $x_0 = 8, y_0 = 11$.
 Se ejecuta otra vez el método toTest con estos valores, dando verdadero tanto el primer if como el segundo; por lo tanto ambas ramas ya han sido cubiertas y se descarta la condición
 simbólica correspondiente a esa bifurcación, quedando todavía pendiente obtener valores que hagan falsa $x_0+3 \geq y_0$. Por lo tanto se niega esta condición obtenidendo
-$x_0+3 < y_0$ y se le pide al Solver valores que la satisfaga. Este devuelve $x=-1, y=3$. Al ejecutar con estos valores el método, no se pasa el primer If, con lo que se termina de recorrer todos los posibles caminos del árbol de ejecución.
+$x_0+3 < y_0$ y se le pide al Solver valores que la satisfaga. Éste devuelve $x=-1, y=3$. Al ejecutar con estos valores el método, no se pasa el primer If, con lo que se termina de recorrer todos los posibles caminos del árbol de ejecución.
 
-Finalmente, con los pares de valores \{($x=0,y=0$), ($x=8,y=11$), ($x=-1,y=3$)\} se crean tres test, uno por cada par de valores devuelto. En la figura 1 se muestra el árbol
+Finalmente, con los pares de valores \{($x=0,y=0$), ($x=8,y=11$), ($x=-1,y=3$)\} se crean tres test, uno por cada par de valores devuelto. En la Figura~\ref{arbolEjecucion} (b) se muestra el árbol
 de ejecución del método toTest. Cabe destacar que cada hoja del árbol representará un conjunto diferente de valores que funcionarán como input para testear dicho método,
 asegurando el 100\% de cobertura de código alcanzable \footnote{Puede suceder que el método a testear contenga “código muerto”, es decir, código que jamás se ejecutará
 independientemente de los valores de entrada de dicho método}, tanto de sentencias como de ramas. 
@@ -115,13 +115,13 @@ independientemente de los valores de entrada de dicho método}, tanto de sentenc
 
 \begin{figure*}[hbt!]
   \centering
-    \begin{minipage}[b]{0.5\textwidth}
+    \begin{minipage}[b]{.5\textwidth}
       \begin{lstlisting}[language=Java]
 	Integer toTest(int x, int y)
 	{
-	  x = x +3;
-	    if(x>=y) 
-	      if( x > 10) 
+	  x = x + 3;
+	    if(x >= y) 
+	      if(x > 10) 
 		return x;
 	  return y;
 	}
@@ -142,9 +142,7 @@ independientemente de los valores de entrada de dicho método}, tanto de sentenc
 %				El problema de los ciclos	       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{El problema de los ciclos}\label{sec:loopProblem}
-Es importante destacar que el enfoque propuesto presenta un problema inherente a la ejecución simbólica al tratar con código que posea ciclos.
-Este problema es que al iterar sobre una variable simbólica en un ciclo puede suceder que el mismo continúe indefinidamente al generar una nueva
-ejecución en cada e\-va\-lua\-ción de la condición del ciclo. En la figura \ref{cicloInf} se muestra un ejemplo donde sucede esto:
+Es importante destacar que el enfoque propuesto presenta un problema inherente a la ejecución simbólica al tratar con código que posea ciclos. El problema es que el proceso iterativo de generación de nuevos inputs puede continuar indefinidamente. El ejemplo de la Figura \ref{cicloInf} ilustra este fenómeno.
 
 
 \begin{figure*}[hbt!]
@@ -164,20 +162,14 @@ ejecución en cada e\-va\-lua\-ción de la condición del ciclo. En la figura \r
     \centering
     \includegraphics[width=0.95\textwidth]{cicloInf}
   \end{minipage}
-  \caption{Ejemplo de ciclo infinito en la ejecución simbólica}
+  \caption{Ejemplo de código con cilcos y un árbol de ejecución infinito}
   \label{cicloInf}
 \end{figure*}
 
-La herramienta comienza la ejecución con $x=0$, siendo $x_0$ su variable simbólica. El while no se cumple por lo que $y=0$ y se recolecta la restricción simbólica $0 \geq x_0$.
-Se niega esta condición ($0<x_0$) y se la entrega al SMT solver. Este devuelve como solución $x=1$. Nuevamente se ejecuta la función con este nuevo valor, cumpliéndose la primera vez
-el while, pero no la segunda. Por lo tanto se recolectan las condiciones $0 < x_0, 1 \geq x_0$. Luego se entrega estas restricciones nuevamente al solver, negando la última
-($0<x_0, 1<x_0$). Como resultado devuelve $x=2$. Se vuelve a ejecutar la función con este valor, entrando dos veces al while, por lo que el valor de $y=2$. Las restricciones simbólicas
-en esta ejecución son $0<x_0, 1<x_0, 2 \geq x_0$. Se niega la última condición y el solver devuelve $x=3$. Esto permite que al ejecutar nuevamente la función con este valor se ingrese
-tres veces al while, obteniendo $y=3$ y por lo tanto $0<x_0, 1<x_0, 2<x_0, 3 \geq x_0$ como restricciones simbólicas. Como es de esperar, al negar la última condición
-($0<x_0, 1<x_0, 2<x_0, 3<x_0$) el solver devuelve $x=4$. Se puede observar que se ha incidido en un ciclo infinito. Por este motivo, es necesario buscar una alternativa al tratar
-con ciclos.
+La herramienta comienza la ejecución con $x=0$, siendo $x_0$ su valor simbólico. Dado que $y=0$, la condición de la guarda del while no se cumple y en consecuencia se recolecta la restricción simbólica ($0 \geq x_0$). A continuación se niega la condición obteniéndose ($0<x_0$) y se la entrega al SMT solver. Éste devuelve como solución $x=1$. Nuevamente se ejecuta la función con este nuevo valor, cumpliéndose la primera vez el while, pero no la segunda. Por lo tanto se recolectan las condiciones ($0 < x_0, 1 \geq x_0$). Luego se entregan estas restricciones nuevamente al solver, negando la última ($0<x_0, 1<x_0$). Como resultado devuelve $x=2$. Se vuelve a ejecutar la función con este valor, entrando dos veces al while, por lo que el valor de $y=2$. Las restricciones simbólicas en esta ejecución son $0<x_0, 1<x_0, 2 \geq x_0$. Se niega la última condición y el solver devuelve $x=3$. Esto permite que al ejecutar nuevamente la función con este valor se ingrese
+tres veces al while, obteniendo $y=3$ y por lo tanto $0<x_0, 1<x_0, 2<x_0, 3 \geq x_0$ como restricciones simbólicas. Como es de esperar, al negar la última condición ($0<x_0, 1<x_0, 2<x_0, 3<x_0$) el solver devuelve $x=4$. Se puede observar que este proceso de generación de inputs puede continuar indefinidamente. Por este motivo, es necesario buscar una alternativa al tratar con ciclos.
 
-El enfoque adoptado en este trabajo es ejecutar los ciclos a lo sumo una cantidad fija de veces k (parametrizable en la herramienta). Para esto es necesario un pre procesamiento
+El enfoque adoptado en este trabajo es ejecutar los ciclos a lo sumo una cantidad fija de veces $k$ (parametrizable en la herramienta). Para esto es necesario un pre procesamiento
 cuyo objetivo es reemplazar los ciclos presentes en los métodos por su equivalente en If’s anidados una cantidad fija de veces. Veámoslo mejor con un ejemplo:\\
 \newline
 
@@ -247,7 +239,7 @@ if (x < y + 1){
 \end{tabular}
 \end{table}
 
-De esta forma, el pre procesamiento permite modificar el programa original para evitar iteraciones infinitas.
+De esta forma, el pre procesamiento permite modificar el programa original para evitar que el proceso de generación de inputs continue indefinidamente.
 Este programa modificado sin ciclos será sobre el cual se lleva a cabo el proceso de instrumentación que se explicará más adelante.
 
 
@@ -274,7 +266,7 @@ de obtener valores concretos para cada camino diferente del árbol de ejecución
 Para obtener el conjunto de restricciones con la representación simbólica de los parámetros de entrada de la función, es necesario instrumentar el programa.
 Spoon \cite{spoon}, una herramienta para analizar y transformar código fuente Java, es la herramienta utilizada para la instrumentación.
 Este es un proceso complejo que se detallará en la subseccion siguiente.
-En la figura \ref{fig:procesosRealizados} se puede observar un esquema general de los procesos que se realizan.
+En la Figura~\ref{fig:procesosRealizados} se puede observar un esquema general de los procesos que se realizan.
 
 \begin{figure}
 \centering
@@ -290,16 +282,16 @@ En la figura \ref{fig:procesosRealizados} se puede observar un esquema general d
 Como se mencionó antes, el objetivo de la instrumentación es obtener todas las restricciones simbólicas de los diferentes caminos del árbol de
 ejecución para conseguir valores concretos que ejecuten todos los caminos posibles. Esto se logra modificando el programa sin cambiar su semántica original
 pero agregando sentencias. Estas permiten recolectar restricciones simbólicas en base a los parámetros simbólicos de la función teniendo en cuenta las asignaciones
-y las estructuras tipo condicionales. Una vez finalizada la instrumentación, el programa a ejecutar es el instrumentado.
+y las sentencias condicionales presentes en el código. Una vez finalizada la instrumentación, el programa a ejecutar es el instrumentado.
 
-El proceso de instrumentación se realiza tomando como input el programa modificado con el pre proceso explicado en el apartado número \ref{sec:loopProblem}
+El proceso de instrumentación se realiza tomando como input el programa modificado con el pre proceso explicado en la Sección \ref{sec:loopProblem}
 debido al problema con los ciclos. De esta forma, el programa a instrumentar en lugar de contener ciclos, contiene una cantidad fija de If’s en su lugar.
 A continuación se presenta un resumen de los procesos que lleva a cabo la instrumentación:
 
 \begin{itemize}
   \item \underline{Asignaciones}: se detectan y registran todas las asignaciones en el método, incluyendo declaraciones locales con algún valor asignado. Luego
   de cada asignación, se agregan las sentencias necesarias para actualizar en el mapa descrito anteriormente los valores simbólicos de las variables.
-  Por ejemplo, para $x=2, y=10$ el Mapa $\delta$ se comporta de la forma que ilusta el siguiente cuadro. Nótese que la segunda columna representa el momento
+  Por ejemplo, para $x=2, y=10$ el Mapa $\delta$ se comporta de la forma que ilusta el Cuadro~\ref{cuadro-asignaciones}. Nótese que la segunda columna representa el momento
   inmediatamente posterior a la ejecución del código de la primer columna asociada.
       \begin{table}
 	\centering
@@ -326,12 +318,10 @@ A continuación se presenta un resumen de los procesos que lleva a cabo la instr
 	\end{tabular}
 	\centering
 	\caption{Asignaciones con su representación simbólica dado por el Mapa $\delta$. Método ejecutado con ($x=2, y=10$)}
+	\label{cuadro-asignaciones}
       \end{table}
 
-  \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las
-  estructuras condicionales presentes en el código. Un método sin condicionales, es un método con un único camino posible a ejecutar. Por esta razón, las restricciones simbólicas
-  mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En la figura
-  \ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución.
+  \item \underline{Sentencias IF’s}: el árbol de ejecución está representado por los diferentes caminos posibles que puede tener un programa. Estos están determinados por las estructuras condicionales presentes en el código. Un método sin condicionales, es un método con un único camino posible a ejecutar. Por esta razón, las restricciones simbólicas mencionadas están determinadas por las sentencias condicionales cuyos valores son los valores simbólicos de los parámetros de entrada, cuando corresponda. En la Figura~\ref{arbolEjecucion} se puede observar un ejemplo de un método con su correspondiente árbol de ejecución.
   
   A continuación se presenta un ejemplo de cómo se recolectan las restricciones simbólicas que luego serán enviadas a un solver para obtener valores concretos.
   Cabe destacar que las restricciones simbólicas se recolectan para una ejecución concreta del método a testear, es decir, con valores concretos para cada parámetro de la función.
@@ -460,7 +450,7 @@ además de soportar la generación de test sobre programas que realizan llamadas
 % \appendixpage
 
 
-\section*{Apéndice A. Preproceso}\label{apend.A}
+\section*{Apéndice A. \enspace Preproceso}\label{apend.A}
 Con el objetivo de otorgar a la herramienta desarrollada mayor flexibilidad en el código que acepta, se han aplicado una serie de proprocesos sobre el código fuente
 original. Esto se realiza ya que el framework Spoon no detecta correctamente ciertas expresiones. Por ejemplo, para la instrucción \texttt{a+=2} detecta que el valor
 a asignar es 2, cuando debería ser \texttt{a + 2}.
@@ -528,33 +518,35 @@ De esta forma, al momento de procesar los ciclos (por lo comentado en la secció
 \texttt{while}, facilitando dicho procesamiento.
 
 
-\section{Herramienta gráfica}\label{apend.B}
-La interfaz gráfica fue desarrollada con JavaFX. Sin embargo, no se descarta la posibilidad de reemplazarla por un plugin para Eclipse, a fin de facilitar su uso.
-Actualmente consta de tres opciones generales.
+\section*{Apéndice B.\enspace Herramienta gráfica}\label{apend.B}
+A continuación se presentan algunas características y usos de la herramienta gráfica.
 
-    \subsection{Buscar}
+Su interfaz fue desarrollada con JavaFX. Sin embargo, no se descarta la posibilidad de reemplazarla por un plugin para Eclipse, a fin de facilitar su uso.
+Actualmente consta de tres opciones generales:
+
+    \subsection*{B.1\enspace Buscar}
     Su objetivo es seleccionar un archivo .java en el filesystem sobre la cual se desea generar los test. Por lo general, debería ser una clase perteneciente a un proyecto
     Java. En la figura \ref{fig:buscarClaseJava} se puede observar la interfaz gráfica de la herramienta al iniciarla.
     \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{screenshots/1-inicial}
+    \includegraphics[width=0.7\textwidth]{screenshots/1-inicial}
     \caption{JGenTest: Imagen de la herramienta al iniciarla}
     \label{fig:buscarClaseJava}
     \end{figure}
 
-    \subsection{Selección de métodos}
+    \subsection*{B.2\enspace Selección de métodos}
     Luego de seleccionar la clase .java, la herramienta carga los métodos que existen en dicha clase, indicando el tipo de retorno y los parámetros de cada una.
     Además se habilita el campo \texttt{Profundidad ciclos}. Este representa el parámetro $k$ explicado en el artículo en relación al problema con los ciclos durante
     la ejecución simbólica. En lugar de ejecutarse infinitamente, se ejecutan (a lo sumo) k veces, dependiendo de los valores concretos de los parámetros de entrada.
     En la figura \ref{fig:seleccionaParams} se muestra un ejemplo donde se seleccionan 3 métodos a testear.
     \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{screenshots/2-seleccionMetodos}
+    \includegraphics[width=0.85\textwidth]{screenshots/2-seleccionMetodos}
     \caption{Métodos seleccionados a testear. El valor 7 es la cantidad máxima de veces que se ejecutan los ciclos }
     \label{fig:seleccionaParams}
     \end{figure}
     
-    \subsection{Generación de test automático}
+    \subsection*{B.3\enspace Generación de test automático}
     Una vez seleccionados los métodos que se desean testear, al hacer clic en \texttt{Generar casos de Test!}, se llevan a cabo los procesos indicados en la figura
     \ref{fig:procesosRealizados}. Luego de generar los casos de test, se indica por medio de un mensaje la cantidad de test generados y el lugar donde se almacenó.
     Por defecto, se almacenan en la misma carpeta donde se encuentra el archivo .java seleccionado en el primer paso.
@@ -572,11 +564,10 @@ Actualmente consta de tres opciones generales.
       \centering{(b)}
     \end{minipage}
     \caption{(a)Mensaje de generación correcta de los test, indicando la ubicación del archivo y la cantidad de test generados. (b)Ejemplos de test generados}
-    \label{cicloInf}
     \end{figure*}
     
     
-\section{Análisis de cobertura}
+\section*{Apéndice C.\enspace Análisis de cobertura}
 Para verificar la cobertura de los test generados, se ha utilizado el plugin para Eclipse EclEmma. Este permite observar de forma sencilla el código que se ha cubierto
 con los test. Para los test generados anteriormente se puede observar que se ha cubierto el 100\% del código:   
 \begin{figure*}[hbt!]
@@ -592,7 +583,6 @@ con los test. Para los test generados anteriormente se puede observar que se ha 
   \centering{(b)}
 \end{minipage}
 \caption{(a)Test Generados. (b)En verde, código cubierto con los test}
-\label{cicloInf}
 \end{figure*}
 
 
