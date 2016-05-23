@@ -98,12 +98,11 @@ A continuación se describe un ejemplo de cómo la herramienta construye los tes
 Antes de comenzar la ejecución, el código es instrumentado de forma tal de ir manteniendo un mapeo entre las variables y sus valores simbólicos. Al iniciar la ejecución sobre el
 código ya instrumentado, la herramienta asigna el valor cero a ambas variables. De esta forma, se tiene que $x=0, y=0$ como valores concretos y \(\{x\mapsto x_0,y\mapsto y_0\}\)
 son las expresiones simbólicas asociadas. En la primer sentencia del método, se actualiza el valor de la variable x, por lo tanto, se actualizan las expresiones simbólicas
-\(\{x\mapsto x_0+3,y\mapsto y_0\}\). Luego, la evaluación de la guarda del primer if da verdadero, y la del segundo da falso, y la ejecución de la función termina.
+\(\{x\mapsto x_0+3,y\mapsto y_0\}\). Luego, la evaluación condicional del primer if da verdadero, y la del segundo da falso, y la ejecución de la función termina.
 La herramienta recolecta las restricciones de los predicados condicionales ejecutados: $x_0+3 \geq y_0$ (del primer If) y $x_0+3 \leq 10$ (del segundo If).
 Estas restricciones ($x_0+3 \geq y_0, x_0+3 \leq 10$) las llamaremos restricciones simbólicas. Luego se niega el último predicado ($x_0+3 > 10$) y se resuelven las restricciones
 simbólicas para obtener un camino alternativo al ya recorrido. Estas restricciones se resuelven por medio de un SMT Solver: se envían las restricciones y devuelve valores
 concretos para las variables simbólicas de forma tal que se satisfagan las ecuaciones. Para las restricciones $x_0+3 \geq y_0, x_0+3 > 10$ se proponen los valores $x_0 = 8, y_0 = 11$.
-
 Se ejecuta otra vez el método toTest con estos valores, dando verdadero tanto el primer if como el segundo; por lo tanto ambas ramas ya han sido cubiertas y se descarta la condición
 simbólica correspondiente a esa bifurcación, quedando todavía pendiente obtener valores que hagan falsa $x_0+3 \geq y_0$. Por lo tanto se niega esta condición obtenidendo
 $x_0+3 < y_0$ y se le pide al Solver valores que la satisfaga. Este devuelve $x=-1, y=3$. Al ejecutar con estos valores el método, no se pasa el primer If, con lo que se termina de recorrer todos los posibles caminos del árbol de ejecución.
